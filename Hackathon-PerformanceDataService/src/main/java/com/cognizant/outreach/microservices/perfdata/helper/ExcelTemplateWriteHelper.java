@@ -2,9 +2,6 @@ package com.cognizant.outreach.microservices.perfdata.helper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -30,9 +27,8 @@ import com.cognizant.outreach.microservices.perfdata.vo.PerformanceRowVO;
 @Component
 public class ExcelTemplateWriteHelper {
 
-	public static final String EXCEL_FILENAME = "ComponentTrackerDetails";
 	public static final String EXCEL_INTRODUCTION_SHEETNAME = "Introduction";
-	public static final String EXCEL_DATA_SHEETNAME = "Performance Measurable data";
+	public static final String EXCEL_DATA_SHEETNAME = "Performance Measurable Data";
 
 	public byte[] getExcelTemplateFile(PerformanceDataTableVO performanceDataTableVO) throws IOException {
 
@@ -40,40 +36,143 @@ public class ExcelTemplateWriteHelper {
 		XSSFWorkbook workbook = createWorkBook();
 
 		// Create Introduction sheet
-		createIntroductionSheet(workbook);
+		createIntroductionSheet(workbook, performanceDataTableVO);
 		
 		// Create Data Sheet
 		createDataSheet(workbook, performanceDataTableVO);
 		
-		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		try {
-			workbook.write(bos);
-		} finally {
-			bos.close();
-		}
-		byte[] bytes = bos.toByteArray();
+		workbook.write(bos);
 		
-		Path path = Paths.get("C:\\Users\\Admin\\Desktop\\GreenStarAppDoc\\sample.xlsx");
-		Files.write(path, bytes);
-		System.out.println("END");
-		
-		return bytes;
+		return bos.toByteArray();
 	}
 
 	private XSSFWorkbook createWorkBook() {
 		return new XSSFWorkbook();
 	}
 
-	private void createIntroductionSheet(XSSFWorkbook workbook) {
+	private void createIntroductionSheet(XSSFWorkbook workbook, PerformanceDataTableVO performanceDataTableVO) {
 
 		XSSFSheet sheet = workbook.createSheet(EXCEL_INTRODUCTION_SHEETNAME);
 
-		Row row = sheet.createRow(5);
-
-		Cell headerCell = row.createCell(5);
+		Row row = sheet.createRow(1);
+		Cell headerCell = row.createCell(2);
+		headerCell.setCellValue("Introduction");
+		headerCell.setCellStyle(getIntroductionHeaderCellStyle(workbook));
+		CellRangeAddress cellMerge = new CellRangeAddress(1, 1, 2, 3);
+		sheet.addMergedRegion(cellMerge);
+		setBorder(cellMerge, headerCell, sheet, workbook);
 		
-		headerCell.setCellValue("Introduction");	
+		// School Label & Value
+		row = sheet.createRow(4);
+		headerCell = row.createCell(2);
+		sheet.setColumnWidth(2, 4000);
+		headerCell.setCellValue("School Name");
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		setCellBorder(headerCell);
+		
+		headerCell = row.createCell(3);
+		sheet.setColumnWidth(3, 15000);
+		headerCell.setCellValue(performanceDataTableVO.getSchoolName());
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		setCellBorder(headerCell);
+		
+		row = sheet.createRow(5);
+		headerCell = row.createCell(2);
+		
+		headerCell.setCellValue("School ID");
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		setCellBorder(headerCell);
+		
+		headerCell = row.createCell(3);
+		headerCell.setCellStyle(getIntroductionValueItemsCellStyle(workbook));
+		headerCell.setCellValue(String.valueOf(performanceDataTableVO.getSchoolId()));		
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		setCellBorder(headerCell);
+		
+		// Section Label & Value
+		row = sheet.createRow(6);
+		headerCell = row.createCell(2);		
+		headerCell.setCellValue("Class & Section");
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		setCellBorder(headerCell);
+		
+		headerCell = row.createCell(3);
+		headerCell.setCellStyle(getIntroductionValueItemsCellStyle(workbook));
+		headerCell.setCellValue(String.valueOf(performanceDataTableVO.getClassName()));
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		setCellBorder(headerCell);
+		
+		// Class Label & Value
+		row = sheet.createRow(7);
+		headerCell = row.createCell(2);		
+		headerCell.setCellValue("Class ID");
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		setCellBorder(headerCell);
+		
+		headerCell = row.createCell(3);
+		headerCell.setCellStyle(getIntroductionValueItemsCellStyle(workbook));
+		headerCell.setCellValue(String.valueOf(performanceDataTableVO.getClassId()));
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		setCellBorder(headerCell);
+		
+		// Month Label & Value
+		row = sheet.createRow(8);
+		headerCell = row.createCell(2);		
+		headerCell.setCellValue("Month");
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		setCellBorder(headerCell);
+		
+		headerCell = row.createCell(3);
+		headerCell.setCellStyle(getIntroductionValueItemsCellStyle(workbook));
+		headerCell.setCellValue(performanceDataTableVO.getMonthName());
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		setCellBorder(headerCell);
+		
+		// Note Label
+		row = sheet.createRow(12);
+		headerCell = row.createCell(2);		
+		headerCell.setCellValue("Note:");
+		headerCell.setCellStyle(getIntroductionCellStyle(workbook));
+		cellMerge = new CellRangeAddress(12, 12, 2, 6);
+		sheet.addMergedRegion(cellMerge);
+		setBorder(cellMerge, headerCell, sheet, workbook);
+		
+		// Note Values - 1
+		row = sheet.createRow(14);
+		headerCell = row.createCell(2);		
+		headerCell.setCellValue("Please do not change/remove any value in/from this sheet");
+		headerCell.setCellStyle(getIntroductionValueItemsCellStyle(workbook));
+		cellMerge = new CellRangeAddress(14, 14, 2, 6);
+		sheet.addMergedRegion(cellMerge);
+		setBorder(cellMerge, headerCell, sheet, workbook);
+		
+		// Note Values - 2
+		row = sheet.createRow(15);
+		headerCell = row.createCell(2);		
+		headerCell.setCellValue("Please do not change/remove any header value in/from \"Performance Measurable Data\" sheet");
+		headerCell.setCellStyle(getIntroductionValueItemsCellStyle(workbook));
+		cellMerge = new CellRangeAddress(15, 15, 2, 6);
+		sheet.addMergedRegion(cellMerge);
+		setBorder(cellMerge, headerCell, sheet, workbook);
+		
+		// Note Values - 3
+		row = sheet.createRow(16);
+		headerCell = row.createCell(2);		
+		headerCell.setCellValue("Please do not change/remove any roll no and student name in/from \"Performance Measurable Data\" sheet");
+		headerCell.setCellStyle(getIntroductionValueItemsCellStyle(workbook));
+		cellMerge = new CellRangeAddress(16, 16, 2, 6);
+		sheet.addMergedRegion(cellMerge);
+		setBorder(cellMerge, headerCell, sheet, workbook);
+		
+		// Note Values - 4
+		row = sheet.createRow(17);
+		headerCell = row.createCell(2);		
+		headerCell.setCellValue("User can edit the performance parameter value with either \"0\" or \"1\"");
+		headerCell.setCellStyle(getIntroductionValueItemsCellStyle(workbook));
+		cellMerge = new CellRangeAddress(17, 17, 2, 6);
+		sheet.addMergedRegion(cellMerge);
+		setBorder(cellMerge, headerCell, sheet, workbook);
 	}
 
 	private void createDataSheet(XSSFWorkbook workbook, PerformanceDataTableVO performanceDataTableVO) {
@@ -93,21 +192,20 @@ public class ExcelTemplateWriteHelper {
 		
 		// Student Name Header
 		Cell headerNameCell = row.createCell(1);
-		headerNameCell.setCellValue("Name");
+		headerNameCell.setCellValue("Student Name");
 		headerNameCell.setCellStyle(getHeaderCellStyle(workbook));
 		cellMerge = new CellRangeAddress(0, 1, 1, 1);
 		sheet.addMergedRegion(cellMerge);
 		setBorder(cellMerge, headerNameCell, sheet, workbook);
 		
 		// Main Header
-		int subTitleTot = 2;
 		int dynamicColumnStart = 2;
 		for(PerformanceHeaderVO performanceHeaderVO : performanceDataTableVO.getHeaders()) {
 			Cell headerCell = row.createCell(dynamicColumnStart);
 			headerCell.setCellValue(performanceHeaderVO.getTitle());
 			headerCell.setCellStyle(getHeaderCellStyle(workbook));
 			
-			cellMerge = new CellRangeAddress(0, 0, dynamicColumnStart, (dynamicColumnStart+(subTitleTot-1)));
+			cellMerge = new CellRangeAddress(0, 0, dynamicColumnStart, (dynamicColumnStart+(performanceDataTableVO.getTotalSubTitle()-1)));
 			sheet.addMergedRegion(cellMerge);
 			setBorder(cellMerge, headerCell, sheet, workbook);
 			
@@ -143,7 +241,7 @@ public class ExcelTemplateWriteHelper {
 			for(PerformanceDayVO performanceDayVO : performanceRowVO.getPerformanceDays()) {
 				for(PerformanceDataVO performanceDataVO : performanceDayVO.getPerformanceData()) {
 					dataCell = dataRow.createCell(dynamicDataColumnStart);
-					dataCell.setCellValue("");
+					dataCell.setCellValue("1");
 					setBorder(new CellRangeAddress(rowStartIndex, rowStartIndex, dynamicDataColumnStart, dynamicDataColumnStart), dataCell, sheet, workbook);
 					setDataCellStyle(dataCell);
 					dynamicDataColumnStart++;
@@ -155,7 +253,8 @@ public class ExcelTemplateWriteHelper {
 		System.out.println("BorderStyle.THIN.ordinal() :: "+BorderStyle.THIN.ordinal());
 	}
 	
-	private static void setBorder(CellRangeAddress region, Cell cell, XSSFSheet sheet, XSSFWorkbook workbook) {		
+	private static void setBorder(CellRangeAddress region, Cell cell, XSSFSheet sheet, XSSFWorkbook workbook) {
+		
 		RegionUtil.setBorderBottom(1, region, sheet, workbook);
 		RegionUtil.setBorderTop(1, region, sheet, workbook);
 		RegionUtil.setBorderLeft(1, region, sheet, workbook);
@@ -163,6 +262,14 @@ public class ExcelTemplateWriteHelper {
 				
 		CellStyle cellStyle = cell.getCellStyle();
 		cellStyle.setFillBackgroundColor(IndexedColors.WHITE.getIndex());
+	}
+	
+	private static void setCellBorder(Cell cell) {
+		CellStyle cellStyle = cell.getCellStyle();
+		cellStyle.setBorderBottom((short) BorderStyle.THIN.ordinal());
+		cellStyle.setBorderLeft((short) BorderStyle.THIN.ordinal());
+		cellStyle.setBorderRight((short) BorderStyle.THIN.ordinal());
+		cellStyle.setBorderTop((short) BorderStyle.THIN.ordinal());
 	}
 	
 	private static CellStyle getHeaderCellStyle(Workbook workBook) {
@@ -182,10 +289,56 @@ public class ExcelTemplateWriteHelper {
         return cellStyle;
 	}
 	
-	private static void setCellWidth(XSSFSheet sheet, int columnNo, int width) {
-		sheet.setColumnWidth(columnNo, width);
+	private static CellStyle getIntroductionCellStyle(Workbook workBook) {
+
+        CellStyle cellStyle = workBook.createCellStyle();
+
+        // To Set Font Style
+        Font font = workBook.createFont();
+        font.setFontHeightInPoints((short) 11);
+        font.setColor(IndexedColors.BLACK.getIndex());
+        font.setBold(true);
+        cellStyle.setFont(font);
+
+        cellStyle.setAlignment((short)HorizontalAlignment.LEFT.ordinal());
+        cellStyle.setVerticalAlignment((short)VerticalAlignment.CENTER.ordinal());
+        
+        return cellStyle;
 	}
 	
+	private static CellStyle getIntroductionHeaderCellStyle(Workbook workBook) {
+
+        CellStyle cellStyle = workBook.createCellStyle();
+
+        // To Set Font Style
+        Font font = workBook.createFont();
+        font.setFontHeightInPoints((short) 11);
+        font.setColor(IndexedColors.BLACK.getIndex());
+        font.setBold(true);
+        cellStyle.setFont(font);
+
+        cellStyle.setAlignment((short)HorizontalAlignment.CENTER.ordinal());
+        cellStyle.setVerticalAlignment((short)VerticalAlignment.CENTER.ordinal());
+        
+        return cellStyle;
+	}
+	
+	private static CellStyle getIntroductionValueItemsCellStyle(Workbook workBook) {
+
+        CellStyle cellStyle = workBook.createCellStyle();
+
+        // To Set Font Style
+        Font font = workBook.createFont();
+        font.setFontHeightInPoints((short) 11);
+        font.setColor(IndexedColors.BLACK.getIndex());
+        cellStyle.setFont(font);
+
+        cellStyle.setAlignment((short)HorizontalAlignment.LEFT.ordinal());
+        cellStyle.setVerticalAlignment((short)VerticalAlignment.CENTER.ordinal());
+        
+        return cellStyle;
+	}
+		
 	private static CellStyle setDataCellStyle(Cell cell) {
 
         CellStyle cellStyle = cell.getCellStyle();
@@ -196,17 +349,4 @@ public class ExcelTemplateWriteHelper {
         return cellStyle;
 	}
 	
-	public static void main(String[] args) throws IOException {
-
-		PerformanceDataTableVO performanceDataTableVO = new PerformanceDataTableVO();
-
-		byte[] bytes = new ExcelTemplateWriteHelper().getExcelTemplateFile(null);
-
-		Path path = Paths.get("C:\\Users\\Admin\\Desktop\\GreenStarAppDoc\\sample.xlsx");
-		Files.write(path, bytes);
-
-		System.out.println("END");
-
-	}
-
 }

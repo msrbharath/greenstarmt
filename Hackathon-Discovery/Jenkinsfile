@@ -11,7 +11,7 @@ node {
     withMaven(maven:'localmaven') {
 
         stage('Checkout') {
-            git url: 'http://172.18.2.18/magesh/testproject.git', credentialsId: 'mageshgitlabcred', branch: 'master'
+            git url: 'http://172.18.2.18/teamgreenstar/371793-Hackathon-Discovery.git', credentialsId: 'mageshgitlabcred', branch: 'master'
         }
 
         stage('Build') {

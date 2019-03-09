@@ -1,6 +1,8 @@
 package com.cognizant.outreach.microservices.perfdata.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.cognizant.outreach.microservices.perfdata.Application;
 import com.cognizant.outreach.microservices.perfdata.helper.ExcelTemplateWriteHelper;
+import com.cognizant.outreach.microservices.perfdata.helper.PerformanceDataHelper;
 import com.cognizant.outreach.microservices.perfdata.service.BulkUploadPerfDataService;
 import com.cognizant.outreach.microservices.perfdata.service.PerformanceDataService;
 import com.cognizant.outreach.microservices.perfdata.vo.PerformanceDataTableVO;
@@ -29,6 +32,9 @@ public class PerformanceDataServiceTest {
 	
 	@Autowired
 	private BulkUploadPerfDataService bulkUploadPerfDataService;
+	
+	@Autowired
+	private PerformanceDataHelper performanceDataHelper;
 
 	@Test
 	public void populatePerformanceDataExistTest() {
@@ -114,8 +120,17 @@ public class PerformanceDataServiceTest {
 	@Test
 	public void uploadPerformanceDataTemplateTest() throws IOException {
 
-		bulkUploadPerfDataService.uploadTemplate(null);
+		bulkUploadPerfDataService.uploadTemplate(null, null);	
 		
+		System.out.println("Tested");
+	}
+	
+	@Test
+	public void weekDateTest() throws IOException {
+
+		List<String> weekendWorkingDayList = performanceDataHelper.getMonthLevelWorkingDays(1, 2019, 10);
+		
+		// List<LocalDate> holidayList = performanceDataHelper.getHolidayDates(1, 10);
 		
 		System.out.println("Tested");
 	}

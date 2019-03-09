@@ -21,7 +21,7 @@ package com.cognizant.outreach.microservices.perfdata.vo.star;
  *
  */
 public class PerformanceStarVO {
-
+	
 	public String paramOne;
 	public String paramTwo;
 	public String paramThree;

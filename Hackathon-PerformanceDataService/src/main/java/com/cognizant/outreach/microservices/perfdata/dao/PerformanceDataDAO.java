@@ -16,6 +16,8 @@ package com.cognizant.outreach.microservices.perfdata.dao;
 
 import java.util.List;
 
+import org.springframework.data.repository.query.Param;
+
 import com.cognizant.outreach.entity.MeasurableParam;
 import com.cognizant.outreach.entity.MeasurableParamData;
 import com.cognizant.outreach.entity.StudentSchoolAssoc;
@@ -75,4 +77,8 @@ public interface PerformanceDataDAO {
 	 * @return list
 	 */
 	public List<StudentSchoolAssoc> listOfStudentSchoolAssocBySearchParam(PerformanceDataTableVO performanceDataTableVO);
+	
+	public String findSchoolNameBySchoolId(long studentId);
+	
+	public String findClassNameByClassId(long classId);
 }

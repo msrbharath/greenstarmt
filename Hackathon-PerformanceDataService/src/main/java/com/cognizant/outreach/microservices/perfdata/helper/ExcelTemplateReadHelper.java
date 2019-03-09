@@ -1,7 +1,5 @@
 package com.cognizant.outreach.microservices.perfdata.helper;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,40 +8,35 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.cognizant.outreach.microservices.perfdata.vo.SearchPerformanceData;
+import com.cognizant.outreach.util.DateUtil;
 
 @Component
 public class ExcelTemplateReadHelper {
 
-	private static final String FILE_NAME = "C:\\Users\\Admin\\Desktop\\GreenStarAppDoc\\sample.xlsx";
-
-	public SearchPerformanceData getSearchParamFromTemplate(MultipartFile multipartFile) throws IOException {
+	public SearchPerformanceData getSearchParamFromTemplate(Workbook workbook) throws IOException {
 		
 		SearchPerformanceData searchPerformanceData = new SearchPerformanceData();
-		
-		try (Workbook workbook = new XSSFWorkbook(multipartFile.getInputStream())) {
+		try {
 			Sheet sheet = workbook.getSheetAt(0);
-
+			searchPerformanceData.setSchoolName(readCellData(sheet.getRow(4).getCell(3)));
 			searchPerformanceData.setSchoolId(Long.valueOf(readCellData(sheet.getRow(5).getCell(3))));
 			searchPerformanceData.setClassName(readCellData(sheet.getRow(6).getCell(3)));
-			searchPerformanceData.setSectionName(readCellData(sheet.getRow(7).getCell(3)));
-			searchPerformanceData.setMonth(Integer.valueOf(readCellData(sheet.getRow(8).getCell(3))));
-			searchPerformanceData.setWeek(readCellData(sheet.getRow(9).getCell(3)));
+			searchPerformanceData.setClassId(Long.valueOf(readCellData(sheet.getRow(7).getCell(3))));
+			searchPerformanceData.setMonth(DateUtil.MonthValue.getMonthValue(readCellData(sheet.getRow(8).getCell(3))));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return searchPerformanceData;
 	}
 
-	public Map<String, Map<String, String>> getExcelTemplateData(MultipartFile multipartFile) {
+	public Map<String, Map<String, String>> getExcelTemplateData(Workbook workbook) {
 		
 		Map<String, Map<String, String>> excelMap = new HashMap<>();
 		
-		try (Workbook workbook = new XSSFWorkbook(multipartFile.getInputStream())) {
+		try {
 			Sheet sheet = workbook.getSheetAt(1);
 
 			Row dayHeaderRow = sheet.getRow(0);
@@ -97,11 +90,6 @@ public class ExcelTemplateReadHelper {
 			cellValue = String.valueOf(value);
 		}
 		return cellValue;
-	}
-
-	public static void main(String[] args) {
-
-		new ExcelTemplateReadHelper().getExcelTemplateData(null);
 	}
 
 }

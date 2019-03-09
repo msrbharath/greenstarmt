@@ -19,7 +19,8 @@
 	</properties>
 
 	<modules>
-	    <module>greenstarapp-utility</module>
-	    <module>greenstarapp-jpa-entities</module>
+		<module>greenstarapp-jpa-entities</module>
+		<module>greenstarapp-utility</module>
+		<module>greenstarapp-testutil</module>
 	</modules>
 </project>

@@ -14,6 +14,8 @@
  */
 package com.cognizant.outreach.microservices.perfdata.service;
 
+import java.util.Map;
+
 import com.cognizant.outreach.microservices.perfdata.vo.PerformanceDataTableVO;
 import com.cognizant.outreach.microservices.perfdata.vo.SearchPerformanceData;
 
@@ -50,5 +52,12 @@ public interface PerformanceDataService {
 	 * @return String
 	 */
 	public String updatePerformanceData(PerformanceDataTableVO performanceDataTableVO);
+	
+	/**
+	 * Method to populate the week wise working dates based on current year and selected month.
+	 * @param searchPerformanceData
+	 * @return map
+	 */
+	public Map<String, String> getWeekWorkingDaysByMonth(SearchPerformanceData searchPerformanceData);
 
 }

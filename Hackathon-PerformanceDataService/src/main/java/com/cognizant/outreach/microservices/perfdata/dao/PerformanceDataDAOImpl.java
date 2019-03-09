@@ -54,11 +54,20 @@ public class PerformanceDataDAOImpl implements PerformanceDataDAO {
 	public List<Object[]> listOfPerformanceMetricDataBySearchParam(SearchPerformanceData searchPerformanceData) {
 		
 		List<Object[]> performanceDataList = null;
-		try {		
+		Date fromDate = null;
+		Date toDate = null;
+		try {
 			String[] weekDates = searchPerformanceData.getWeek().split("~");
-			Date fromDate = DateUtil.getDatabaseDate(weekDates[0]);
-			Date toDate = DateUtil.getDatabaseDate(weekDates[1]);
-			performanceDataList = performanceDataRepository.listOfMeasurableParamDataBySearchParam(searchPerformanceData.getSchoolId(), searchPerformanceData.getClassName(), searchPerformanceData.getSectionName(), fromDate, toDate);
+			if(null != weekDates) {
+				if(weekDates.length == 1) {
+					fromDate = DateUtil.getParseDateObject(weekDates[0]);
+					toDate = DateUtil.getParseDateObject(weekDates[0]);
+				} else {
+					fromDate = DateUtil.getParseDateObject(weekDates[0]);
+					toDate = DateUtil.getParseDateObject(weekDates[weekDates.length-1]);
+				}
+			}
+			performanceDataList = performanceDataRepository.listOfMeasurableParamDataBySearchParam(searchPerformanceData.getSchoolId(), searchPerformanceData.getClassId(), fromDate, toDate);
 		} catch(Exception e) {
 			
 		}		
@@ -72,11 +81,20 @@ public class PerformanceDataDAOImpl implements PerformanceDataDAO {
 	public List<MeasurableParamData> listOfPerformanceMetricObjectBySearchParam(PerformanceDataTableVO performanceDataTableVO) {
 		
 		List<MeasurableParamData> performanceDataList = null;
-		try {		
+		Date fromDate = null;
+		Date toDate = null;
+		try {
 			String[] weekDates = performanceDataTableVO.getWeek().split("~");
-			Date fromDate = DateUtil.getDatabaseDate(weekDates[0]);
-			Date toDate = DateUtil.getDatabaseDate(weekDates[1]);
-			performanceDataList = performanceDataRepository.listOfMeasurableParamObjectBySearchParam(performanceDataTableVO.getSchoolId(), performanceDataTableVO.getClassName(), performanceDataTableVO.getSection(), fromDate, toDate);
+			if(null != weekDates) {
+				if(weekDates.length == 1) {
+					fromDate = DateUtil.getParseDateObject(weekDates[0]);
+					toDate = DateUtil.getParseDateObject(weekDates[0]);
+				} else {
+					fromDate = DateUtil.getParseDateObject(weekDates[0]);
+					toDate = DateUtil.getParseDateObject(weekDates[weekDates.length-1]);
+				}
+			}
+			performanceDataList = performanceDataRepository.listOfMeasurableParamObjectBySearchParam(performanceDataTableVO.getSchoolId(), performanceDataTableVO.getClassId(), fromDate, toDate);
 		} catch(Exception e) {
 			
 		}		
@@ -87,11 +105,10 @@ public class PerformanceDataDAOImpl implements PerformanceDataDAO {
 	public boolean isExistOfMeasurableParamObjectBySearchParam(SearchPerformanceData searchPerformanceData) {
 		
 		boolean isExist = false;
-		try {		
-			String[] weekDates = searchPerformanceData.getWeek().split("~");
-			Date fromDate = DateUtil.getDatabaseDate(weekDates[0]);
-			Date toDate = DateUtil.getDatabaseDate(weekDates[1]);
-			isExist = performanceDataRepository.isExistOfMeasurableParamObjectBySearchParam(searchPerformanceData.getSchoolId(), searchPerformanceData.getClassName(), searchPerformanceData.getSectionName(), fromDate, toDate);
+		try {			
+			Date fromDate = DateUtil.getDatabaseDate(searchPerformanceData.getStartDate());
+			Date toDate = DateUtil.getDatabaseDate(searchPerformanceData.getEndDate());
+			isExist = performanceDataRepository.isExistOfMeasurableParamObjectBySearchParam(searchPerformanceData.getSchoolId(), searchPerformanceData.getClassId(), fromDate, toDate);
 		} catch(Exception e) {
 			
 		}
@@ -114,7 +131,7 @@ public class PerformanceDataDAOImpl implements PerformanceDataDAO {
 	@Override
 	public List<Object[]> listOfStudentDetailBySearchParam(SearchPerformanceData searchPerformanceData) {
 
-		return performanceDataRepository.listOfStudentDetailBySearchParam(searchPerformanceData.getSchoolId(), searchPerformanceData.getClassName(), searchPerformanceData.getSectionName());
+		return performanceDataRepository.listOfStudentDetailBySearchParam(searchPerformanceData.getSchoolId(), searchPerformanceData.getClassId());
 	}
 	
 	/* (non-Javadoc)
@@ -123,7 +140,17 @@ public class PerformanceDataDAOImpl implements PerformanceDataDAO {
 	@Override
 	public List<StudentSchoolAssoc> listOfStudentSchoolAssocBySearchParam(PerformanceDataTableVO performanceDataTableVO) {
 
-		return performanceDataRepository.listOfStudentSchoolAssocBySearchParam(performanceDataTableVO.getSchoolId(), performanceDataTableVO.getClassName(), performanceDataTableVO.getSection());
+		return performanceDataRepository.listOfStudentSchoolAssocBySearchParam(performanceDataTableVO.getSchoolId(), performanceDataTableVO.getClassId());
+	}
+
+	@Override
+	public String findSchoolNameBySchoolId(long studentId) {
+		return performanceDataRepository.findSchoolNameBySchoolId(studentId);
+	}
+
+	@Override
+	public String findClassNameByClassId(long classId) {
+		return performanceDataRepository.findClassNameByClassId(classId);
 	}
 
 }

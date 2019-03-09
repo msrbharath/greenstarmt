@@ -17,7 +17,6 @@ package com.cognizant.outreach.microservices.perfdata.controller;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +44,7 @@ public class BulkUploadPerfDataController {
 	private BulkUploadPerfDataService bulkUploadPerfDataService;
 
 	/**
-	 * Method to download the bulk upload template excel file.
+	 * Method to download the bulk upload template excel file format.
 	 * 
 	 * @param searchPerformanceData
 	 * @return ResponseEntity
@@ -56,13 +55,17 @@ public class BulkUploadPerfDataController {
 		return bulkUploadPerfDataService.downloadTemplate(searchPerformanceData);
 	}
 
+	/**
+	 * Method to upload the bulk upload template file.
+	 * 
+	 * @param file
+	 * @param userId
+	 * @return
+	 * @throws IOException
+	 */
 	@PostMapping("/uploadbulkdata")
-	public ApiResponse<Object> bulkUploadPerformanceMetric(@RequestParam("file") MultipartFile file) {
-		try {
-			return new ApiResponse<>(HttpStatus.OK.value(), bulkUploadPerfDataService.uploadTemplate(file), null);
-		} catch (Exception e) {
-			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Error", e.getMessage());
-		}
+	public ApiResponse<Object> bulkUploadPerformanceMetric(@RequestParam("file") MultipartFile file, @RequestParam("userId") String userId) throws IOException {
+		return bulkUploadPerfDataService.uploadTemplate(file, userId);
 	}
 
 }

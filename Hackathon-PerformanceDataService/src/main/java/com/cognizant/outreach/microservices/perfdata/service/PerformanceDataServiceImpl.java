@@ -59,17 +59,28 @@ public class PerformanceDataServiceImpl implements PerformanceDataService {
 	 */
 	@Override
 	public PerformanceDataTableVO getExistingPerformanceData(SearchPerformanceData searchPerformanceData) {
-
+		
+		// Fetch measurable parameters by school id.
 		List<MeasurableParam> measurableParamList = performanceDataDAO.listOfMeasurableParamBySchoolId(searchPerformanceData.getSchoolId());
+		
+		// Fetch existing measurable parameter and value
 		List<Object[]> objectArrayList = performanceDataDAO.listOfPerformanceMetricDataBySearchParam(searchPerformanceData);
 
 		PerformanceDataTableVO performanceDataTableVO = new PerformanceDataTableVO();
 		performanceDataTableVO.setSchoolId(searchPerformanceData.getSchoolId());
+		performanceDataTableVO.setClassId(searchPerformanceData.getClassId());
 		performanceDataTableVO.setClassName(searchPerformanceData.getClassName());
-		performanceDataTableVO.setSection(searchPerformanceData.getSectionName());
 		performanceDataTableVO.setMonth(searchPerformanceData.getMonth());
 		performanceDataTableVO.setWeek(searchPerformanceData.getWeek());
-		performanceDataTableVO.setHeaders(performanceDataHelper.getPerformanceHeader(measurableParamList, searchPerformanceData));
+		performanceDataTableVO.setTotalSubTitle(measurableParamList.size());
+		
+		// Individual dates for given week.
+		List<String> dateList = performanceDataHelper.convertTildeSeprationToList(searchPerformanceData.getWeek());
+		
+		// Performance data table header row formation
+		performanceDataTableVO.setHeaders(performanceDataHelper.getPerformanceHeaderForWeek(measurableParamList, searchPerformanceData, dateList));
+		
+		// Performance data table content formation (existing metrics data)
 		performanceDataTableVO.setPerformanceRows(performanceDataHelper.buildExistingPerformanceRow(objectArrayList));
 
 		return performanceDataTableVO;
@@ -80,18 +91,29 @@ public class PerformanceDataServiceImpl implements PerformanceDataService {
 	 */
 	@Override
 	public PerformanceDataTableVO getCreatePerformanceData(SearchPerformanceData searchPerformanceData) {
-
+		
+		// Fetch student details based on school, class and section.
 		List<Object[]> studentList = performanceDataDAO.listOfStudentDetailBySearchParam(searchPerformanceData);
+		
+		// Fetch measurable parameters
 		List<MeasurableParam> measurableParamList = performanceDataDAO.listOfMeasurableParamBySchoolId(searchPerformanceData.getSchoolId());
 		
 		PerformanceDataTableVO performanceDataTableVO = new PerformanceDataTableVO();
 		performanceDataTableVO.setSchoolId(searchPerformanceData.getSchoolId());
+		performanceDataTableVO.setClassId(searchPerformanceData.getClassId());
 		performanceDataTableVO.setClassName(searchPerformanceData.getClassName());
-		performanceDataTableVO.setSection(searchPerformanceData.getSectionName());
 		performanceDataTableVO.setMonth(searchPerformanceData.getMonth());
 		performanceDataTableVO.setWeek(searchPerformanceData.getWeek());
-		performanceDataTableVO.setHeaders(performanceDataHelper.getPerformanceHeader(measurableParamList, searchPerformanceData));
-		performanceDataTableVO.setPerformanceRows(performanceDataHelper.buildCreatePerformanceRow(searchPerformanceData, studentList,  measurableParamList));
+		performanceDataTableVO.setTotalSubTitle(measurableParamList.size());
+		
+		// Individual dates for given week.
+		List<String> dateList = performanceDataHelper.convertTildeSeprationToList(searchPerformanceData.getWeek());
+		
+		// Performance data table header row formation
+		performanceDataTableVO.setHeaders(performanceDataHelper.getPerformanceHeaderForWeek(measurableParamList, searchPerformanceData, dateList));
+		
+		// Performance data table content formation (create empty metric data)
+		performanceDataTableVO.setPerformanceRows(performanceDataHelper.buildCreatePerformanceRow(searchPerformanceData, studentList,  measurableParamList, dateList));
 		
 		return performanceDataTableVO;
 	}
@@ -104,9 +126,11 @@ public class PerformanceDataServiceImpl implements PerformanceDataService {
 		
 		Date currentDate = new Date();
 		
+		// Fetch measurable parameters and converted to map(to refer the before saving)
 		List<MeasurableParam> measurableParamList = performanceDataDAO.listOfMeasurableParamBySchoolId(performanceDataTableVO.getSchoolId());
 		Map<String, MeasurableParam> measurableParamMap = performanceDataHelper.getPerformanceParamMap(measurableParamList);
-				
+		
+		// Fetch student details and converted to map(to refer the before saving)
 		List<StudentSchoolAssoc> studentSchoolAssocList = performanceDataDAO.listOfStudentSchoolAssocBySearchParam(performanceDataTableVO);
 		Map<String, StudentSchoolAssoc> studentSchoolAssocMap = performanceDataHelper.getStudentSchoolAssocMap(studentSchoolAssocList);
 		
@@ -117,9 +141,11 @@ public class PerformanceDataServiceImpl implements PerformanceDataService {
 						MeasurableParamData measurableParamData = new MeasurableParamData();
 						
 						measurableParamData.setMeasurableDate(DateUtil.getParseDateObject(performanceDayVO.getDateValue()));
+						// Measurable parameter object refer from map
 						measurableParamData.setMeasurableParam(measurableParamMap.get(performanceDataVO.getKey()));
-						measurableParamData.setMeasurableParamValue(performanceDataVO.isValue() == true ? "1" : "0");
+						measurableParamData.setMeasurableParamValue(performanceDataVO.isValue() == true ? 1 : 0);
 						
+						// Student object object refer from map
 						measurableParamData.setStudentSchoolAssoc(studentSchoolAssocMap.get(performanceRowVO.getRollId()));
 						measurableParamData.setCreatedDtm(currentDate);
 						measurableParamData.setCreatedUserId(performanceDataTableVO.getUserId());
@@ -144,6 +170,7 @@ public class PerformanceDataServiceImpl implements PerformanceDataService {
 		
 		Date currentDate = new Date();
 		
+		// Fetch measurable parameter data and converted to map(to refer the before updating)
 		List<MeasurableParamData> measurableParamList = performanceDataDAO.listOfPerformanceMetricObjectBySearchParam(performanceDataTableVO);
 		Map<String, MeasurableParamData> measurableParamMap = performanceDataHelper.getMeasurableParamDataMap(measurableParamList);
 		
@@ -152,9 +179,10 @@ public class PerformanceDataServiceImpl implements PerformanceDataService {
 				for(PerformanceDayVO performanceDayVO : performanceRowVO.getPerformanceDays()) {
 					for(PerformanceDataVO performanceDataVO : performanceDayVO.getPerformanceData()) {
 						
+						// Existing measurable parameter data object refer from map
 						MeasurableParamData measurableParamData = measurableParamMap.get(performanceRowVO.getRollId()+performanceDayVO.getDateValue()+performanceDataVO.getKey());
 						
-						measurableParamData.setMeasurableParamValue(performanceDataVO.isValue() == true ? "1" : "0");
+						measurableParamData.setMeasurableParamValue(performanceDataVO.isValue() == true ? 1 : 0);
 						measurableParamData.setLastUpdatedDtm(currentDate);
 						measurableParamData.setLastUpdatedUserId(performanceDataTableVO.getUserId());
 						
@@ -166,6 +194,14 @@ public class PerformanceDataServiceImpl implements PerformanceDataService {
 			return ERROR;
 		}		
 		return SUCCESS;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cognizant.outreach.microservices.perfdata.service.PerformanceDataService#getWeekWorkingDaysByMonth(com.cognizant.outreach.microservices.perfdata.vo.SearchPerformanceData)
+	 */
+	@Override
+	public Map<String, String> getWeekWorkingDaysByMonth(SearchPerformanceData searchPerformanceData) {
+		return performanceDataHelper.getMonthLevelWorkingWeekDays(searchPerformanceData.getSchoolId(), DateUtil.getCurrentYear(), searchPerformanceData.getMonth());
 	}
 
 }

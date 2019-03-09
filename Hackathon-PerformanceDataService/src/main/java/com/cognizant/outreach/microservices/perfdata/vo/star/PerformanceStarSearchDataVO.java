@@ -27,7 +27,7 @@ public class PerformanceStarSearchDataVO {
 	public long studentId;
 	public long classId;
 	public String teamName;
-	public long month;
+	public int month;
 
 	public String getCalcType() {
 		return calcType;
@@ -69,11 +69,11 @@ public class PerformanceStarSearchDataVO {
 		this.teamName = teamName;
 	}
 
-	public long getMonth() {
+	public int getMonth() {
 		return month;
 	}
 
-	public void setMonth(long month) {
+	public void setMonth(int month) {
 		this.month = month;
 	}
 
