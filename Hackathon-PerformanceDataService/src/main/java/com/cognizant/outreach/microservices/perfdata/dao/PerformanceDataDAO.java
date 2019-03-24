@@ -16,8 +16,6 @@ package com.cognizant.outreach.microservices.perfdata.dao;
 
 import java.util.List;
 
-import org.springframework.data.repository.query.Param;
-
 import com.cognizant.outreach.entity.MeasurableParam;
 import com.cognizant.outreach.entity.MeasurableParamData;
 import com.cognizant.outreach.entity.StudentSchoolAssoc;
@@ -31,7 +29,7 @@ public interface PerformanceDataDAO {
 	 * 
 	 * @param measurableParamData
 	 */
-	public void saveOrUpdateMeasurableParamData(MeasurableParamData measurableParamData);
+	public MeasurableParamData saveOrUpdateMeasurableParamData(MeasurableParamData measurableParamData);
 
 	/**
 	 * Method to search performance metric data based on search parameter.

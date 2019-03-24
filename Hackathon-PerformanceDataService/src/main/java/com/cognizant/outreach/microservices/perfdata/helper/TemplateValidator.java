@@ -1,3 +1,17 @@
+/**
+ * ${TemplateValidator}
+ *
+ *  2019 Cognizant Technology Solutions. All Rights Reserved.
+ *
+ *  This software is the confidential and proprietary information of Cognizant Technology
+ *  Solutions("Confidential Information").  You shall not disclose or use Confidential
+ *  Information without the express written agreement of Cognizant Technology Solutions.
+ *  Modification Log:
+ *  -----------------
+ *  Date                   Author           Description
+ *  18/Feb/2019            Panneer        	Developed base code structure
+ *  ---------------------------------------------------------------------------
+ */
 package com.cognizant.outreach.microservices.perfdata.helper;
 
 import java.util.ArrayList;
@@ -14,9 +28,20 @@ import org.springframework.util.StringUtils;
 import com.cognizant.outreach.entity.MeasurableParam;
 import com.cognizant.outreach.microservices.perfdata.vo.TemplateError;
 
+/**
+ * TemplateValidator class to handle validation for performance bulk upload template. 
+ * 
+ * @author Panneer
+ */
+
 @Component
 public class TemplateValidator {
 	
+	/**
+	 * Method to validate the uploaded template introduction sheet.
+	 * @param workbook
+	 * @return errorMessages
+	 */
 	public List<TemplateError> validateTemplateSrchParam(Workbook workbook) {
 		
 		List<TemplateError> errorMessages = new ArrayList<>();
@@ -38,7 +63,17 @@ public class TemplateValidator {
 		return errorMessages;
 	}
 	
-	public List<TemplateError> validateTemplateFile(Workbook workbook, List<String> rollNoList, Map<String, MeasurableParam> measurableParamMap, List<String> weekDays) {
+	/**
+	 * Method to validate the performance bulk upload templates row and cell value.
+	 * 
+	 * @param workbook
+	 * @param rollNoList
+	 * @param measurableParamMap
+	 * @param weekDays
+	 * @return errorMessages
+	 * @throws Exception 
+	 */
+	public List<TemplateError> validateTemplateFile(Workbook workbook, List<String> rollNoList, Map<String, MeasurableParam> measurableParamMap, List<String> weekDays) throws Exception {
 
 		List<TemplateError> errorMessages = new ArrayList<>();
 
@@ -105,11 +140,18 @@ public class TemplateValidator {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw new Exception(e.getMessage());
 		}
 
 		return errorMessages;
 	}
 
+	/**
+	 * Method to read cell data.
+	 * 
+	 * @param cell
+	 * @return cellValue
+	 */
 	private String readCellData(Cell cell) {
 		String cellValue = "";
 		if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
@@ -121,6 +163,12 @@ public class TemplateValidator {
 		return cellValue;
 	}
 
+	/**
+	 * Method to read parameter cell data.
+	 * 
+	 * @param cell
+	 * @return cellValue
+	 */
 	private String readParamCellData(Cell cell) {
 		String cellValue = "";
 		if (cell.getCellType() == Cell.CELL_TYPE_STRING) {

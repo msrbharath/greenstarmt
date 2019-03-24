@@ -1,5 +1,12 @@
 package com.cognizant.outreach.microservices.perfdata.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 /**
  * ${PerformanceMetricsController}
  *
@@ -15,14 +22,7 @@ package com.cognizant.outreach.microservices.perfdata.controller;
  *  ---------------------------------------------------------------------------
  */
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.cognizant.outreach.microservices.perfdata.service.PerformanceMetricsService;
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics;
 import com.cognizant.outreach.util.modal.ApiResponse;
@@ -34,7 +34,6 @@ import com.cognizant.outreach.util.modal.ApiResponse;
  * @author Bharath
  */
 @RestController
-@CrossOrigin
 @RequestMapping("/perfmetrics")
 public class PerformanceMetricsController {
 
@@ -105,5 +104,68 @@ public class PerformanceMetricsController {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Error", e.getMessage());
 		}
 	}
+	
+	/**
+	 * Method to populate the Dashboard chart Schools by Month
+	 * 
+	 * @param searchPerformanceMetrics
+	 * @return ResponseEntity
+	 */
+	@PostMapping("/dashboard/schoolbymonth")
+	public ApiResponse<Object> getSchoolByMonthMetrics() {
+		try {
+			return new ApiResponse<>(HttpStatus.OK.value(), null,
+					performanceMetricsService.getSchoolByMonthMetrics());
+		} catch (Exception e) {
+			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Error", e.getMessage());
+		}
+	}
 
+	/**
+	 * Method to populate the Dashboard chart Schools by Month
+	 * 
+	 * @param searchPerformanceMetrics
+	 * @return ResponseEntity
+	 */
+	@PostMapping("/dashboard/totalschools")
+	public ApiResponse<Object> getTotalNoOfSchools() {
+		try {
+			return new ApiResponse<>(HttpStatus.OK.value(), null,
+					performanceMetricsService.getTotalNoOfSchools());
+		} catch (Exception e) {
+			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Error", e.getMessage());
+		}
+	}
+	
+	/**
+	 * Method to populate the Dashboard chart Schools by Month
+	 * 
+	 * @param searchPerformanceMetrics 
+	 * @return ResponseEntity
+	 */
+	@PostMapping("/dashboard/topschools")
+	public ApiResponse<Object> getTopPerformingSchools() {
+		try {
+			return new ApiResponse<>(HttpStatus.OK.value(), null,
+					performanceMetricsService.getTopPerformingSchools());
+		} catch (Exception e) {
+			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Error", e.getMessage());
+		}
+	}
+	
+	/**
+	 * Method to populate the Dashboard chart Schools by Month
+	 * 
+	 * @param searchPerformanceMetrics 
+	 * @return ResponseEntity
+	 */
+	@PostMapping("/dashboard/topvolunteers")
+	public ApiResponse<Object> getTopPerformingVolunteers() {
+		try {
+			return new ApiResponse<>(HttpStatus.OK.value(), null,
+					performanceMetricsService.getTopPerformingVolunteers());
+		} catch (Exception e) {
+			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Error", e.getMessage());
+		}
+	}
 }

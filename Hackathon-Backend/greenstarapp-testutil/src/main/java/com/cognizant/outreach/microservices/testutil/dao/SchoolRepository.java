@@ -13,5 +13,5 @@ import com.cognizant.outreach.entity.School;
  */
 @RestResource(exported = false)
 public interface SchoolRepository extends CrudRepository<School, Long> {
-	
+	public School findBySchoolName(String schoolName);
 }

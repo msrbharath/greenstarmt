@@ -1,6 +1,6 @@
 package com.cognizant.outreach.microservices.perfdata.constants;
 
-public class PerfDataConstants {
+public interface PerfDataConstants {
 	public static final String INDIVIDUAL = "Individual";
 	public static final String TEAM = "Team";
 	public static final String CLASS = "Class";

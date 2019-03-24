@@ -14,19 +14,24 @@
  */
 package com.cognizant.outreach.microservices.perfdata.controller;
 
+import java.io.IOException;
+
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.cognizant.outreach.microservices.perfdata.vo.SearchPerformanceData;
+import com.cognizant.outreach.util.modal.ApiResponse;
 
 
 /**
@@ -56,42 +61,50 @@ public class BulkUploadPerfDataControllerTest {
 		mockMvc = MockMvcBuilders.standaloneSetup(bulkUploadPerfDataController).build();
 	}
 
-	
 	/**
-	 * To check if the passed invalid token
-	 * 
-	 * @throws Exception
-	 *//*
+	 * Test method for {@link com.cognizant.outreach.microservices.perfdata.controller.BulkUploadPerfDataController#downloadTemplate(com.cognizant.outreach.microservices.perfdata.vo.SearchPerformanceData)}.
+	 */
 	@Test
-	public void testInvalidToken() throws Exception {
-		HttpEntity<Object> userJson = getHttpEntity(
-				"{\"apiToken\": \"12343553411\", \"userId\": \"magesh\"}");
-
-		ResponseEntity<String> response = template.postForEntity("/security/validatetoken", userJson, String.class);
-
-		Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+	public void testDownloadTemplate() {
+		
+		SearchPerformanceData searchPerformanceDataTemp = getSearchParamValue();
+		
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<ApiResponse> response = template.postForEntity("/downloadtemplate", searchPerformanceDataTemp, ApiResponse.class);
+		Assert.assertNotNull("Create performance bulk upload template:", response.getBody());
 	}
-	
-	*//**
-	 * To check if the passed invalid user id and password
-	 * 
-	 * @throws Exception
-	 *//*
+
+	/**
+	 * Test method for {@link com.cognizant.outreach.microservices.perfdata.controller.BulkUploadPerfDataController#bulkUploadPerformanceMetric(org.springframework.web.multipart.MultipartFile, java.lang.String)}.
+	 * @throws IOException 
+	 */
+	/*
 	@Test
-	public void testInvalidUserIdPassword() throws Exception {
-		HttpEntity<Object> userJson = getHttpEntity(
-				"{\"userid\": \"magesh12\", \"password\": \"magesh\" }");
-
-		ResponseEntity<User> response = template.postForEntity("/security/login", userJson, User.class);
-
-		Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+	public void testBulkUploadPerformanceMetric() throws IOException {
+		
+		File file = new File("src/test/resources/test_bulk_upload_template.xlsx");
+	    FileInputStream input = new FileInputStream(file);
+	    MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "application/vnd.ms-excel", IOUtils.toByteArray(input));
+		
+	    @SuppressWarnings("rawtypes")
+		ResponseEntity<ApiResponse> response = template.postForEntity("/uploadbulkdata", multipartFile, null, ApiResponse.class);
+	    Assert.assertNotNull("Performance bulk upload response:", response.getBody());
 	}
 	*/
 	
-	private HttpEntity<Object> getHttpEntity(Object body) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		return new HttpEntity<Object>(body, headers);
+	private SearchPerformanceData getSearchParamValue() {
+		
+		SearchPerformanceData searchPerformanceData = new SearchPerformanceData();
+		searchPerformanceData.setSchoolId(1l);
+		searchPerformanceData.setSchoolName("SSVM Matriculation School");
+
+		searchPerformanceData.setClassId(1l);
+		searchPerformanceData.setClassName("I");
+		searchPerformanceData.setSectionName("A");
+		searchPerformanceData.setMonth(2);
+		searchPerformanceData.setWeek("18-Feb-2019~19-Feb-2019~20-Feb-2019");
+		
+		return searchPerformanceData;
 	}
 	
 }

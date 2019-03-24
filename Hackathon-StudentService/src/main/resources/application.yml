@@ -6,7 +6,7 @@ spring:
     name: student-service
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://172.18.2.133:3306/greenstar?useSSL=false
+    url: jdbc:mysql://localhost:3306/greenstar?useSSL=false
     username: dbuser
     password: dbuser123
   jpa:

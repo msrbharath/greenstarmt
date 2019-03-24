@@ -14,16 +14,19 @@
  */
 package com.cognizant.outreach.microservices.school.controller;
 
+import java.util.List;
+
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -56,43 +59,30 @@ public class SchoolControllerTest {
 		mockMvc = MockMvcBuilders.standaloneSetup(schoolController).build();
 	}
 
-/*	
-	*//**
-	 * To check if the passed invalid token
+
+	/**
+	 * To check if the schools are retrieved
 	 * 
 	 * @throws Exception
-	 *//*
+	 */
 	@Test
-	public void testInvalidToken() throws Exception {
-		HttpEntity<Object> userJson = getHttpEntity(
-				"{\"apiToken\": \"12343553411\", \"userId\": \"magesh\"}");
-
-		ResponseEntity<String> response = template.postForEntity("/security/validatetoken", userJson, String.class);
-
-		Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+	public void testGetSchools() throws Exception {
+		ResponseEntity<List> response1 = template.getForEntity("/getSchools", List.class);
+		Assert.assertEquals(HttpStatus.OK, response1.getStatusCode());
 	}
 	
-	*//**
-	 * To check if the passed invalid user id and password
+	
+	/**
+	 * To check if the schools are retrieved
 	 * 
 	 * @throws Exception
-	 *//*
+	 */
 	@Test
-	public void testInvalidUserIdPassword() throws Exception {
-		HttpEntity<Object> userJson = getHttpEntity(
-				"{\"userid\": \"magesh12\", \"password\": \"magesh\" }");
-
-		ResponseEntity<User> response = template.postForEntity("/security/login", userJson, User.class);
-
-		Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-	}*/
-	
-	
-	private HttpEntity<Object> getHttpEntity(Object body) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		return new HttpEntity<Object>(body, headers);
+	public void testGetStates() throws Exception {
+		ResponseEntity<List> response1 = template.getForEntity("/getStates", List.class);
+		Assert.assertEquals(HttpStatus.OK, response1.getStatusCode());
 	}
 	
+
 }
 

@@ -78,13 +78,36 @@ public interface PerformanceDataRepository extends CrudRepository<MeasurablePara
 	@Query( "select SUM(md.measurableParamValue), md.studentSchoolAssoc.clazz.className, md.studentSchoolAssoc.clazz.section"
 			+ " FROM MeasurableParamData md WHERE md.studentSchoolAssoc.clazz.school.id=:SCHOOL_ID AND"
 			+ " md.studentSchoolAssoc.clazz.className=:CLASS_NAME AND"
-			+ " md.measurableParam.id=:MEASURABLE_PARAM_ID  GROUP BY md.studentSchoolAssoc.clazz.className ORDER BY md.studentSchoolAssoc.clazz.className asc")
+			+ " md.measurableParam.id=:MEASURABLE_PARAM_ID  GROUP BY md.studentSchoolAssoc.clazz.section ORDER BY md.studentSchoolAssoc.clazz.section asc")
 	public List<Object[]> listOfMeasurableParamDataBySection(@Param("SCHOOL_ID") long schoolId, @Param("CLASS_NAME") String className,
 			@Param("MEASURABLE_PARAM_ID") long measurableParamId);
-	@Query( "select SUM(md.measurableParamValue), md.studentSchoolAssoc.clazz.className, md.studentSchoolAssoc.clazz.section"
+
+	@Query( "select SUM(md.measurableParamValue), md.studentSchoolAssoc.teamName"
 			+ " FROM MeasurableParamData md WHERE md.studentSchoolAssoc.clazz.school.id=:SCHOOL_ID AND"
 			+ " md.studentSchoolAssoc.clazz.className=:CLASS_NAME AND"
-			+ " md.measurableParam.id=:MEASURABLE_PARAM_ID  GROUP BY md.studentSchoolAssoc.clazz.className ORDER BY md.studentSchoolAssoc.clazz.className asc")
+			+ " md.measurableParam.id=:MEASURABLE_PARAM_ID  GROUP BY md.studentSchoolAssoc.teamName ORDER BY md.studentSchoolAssoc.teamName asc")
 	public List<Object[]> listOfMeasurableParamDataByTeam(@Param("SCHOOL_ID") long schoolId, @Param("CLASS_NAME") String className,
 			@Param("MEASURABLE_PARAM_ID") long measurableParamId);
+
+	@Query( "select (SUM(md.measurableParamValue)/COUNT(md.measurableParamValue))*100, md.studentSchoolAssoc.clazz.className, md.studentSchoolAssoc.clazz.section"
+			+ " FROM MeasurableParamData md WHERE md.studentSchoolAssoc.clazz.school.id=:SCHOOL_ID AND"
+			+ " md.studentSchoolAssoc.clazz.className=:CLASS_NAME AND"
+			+ " md.measurableParam.id=:MEASURABLE_PARAM_ID"
+			+ " AND month(md.measurableDate)=:MONTH_NUMBER GROUP BY md.studentSchoolAssoc.clazz.section ORDER BY md.studentSchoolAssoc.clazz.section asc")
+	public List<Object[]> listOfMeasurableParamDataByMonth(@Param("SCHOOL_ID") long schoolId, @Param("CLASS_NAME") String className,
+			@Param("MEASURABLE_PARAM_ID") long measurableParamId,
+			@Param("MONTH_NUMBER") int monthNumber);
+
+	@Query( "select COUNT(DISTINCT md.studentSchoolAssoc.clazz.school.id ),month(md.measurableDate) "
+			+ " FROM MeasurableParamData md WHERE md.studentSchoolAssoc.clazz.school.id=md.studentSchoolAssoc.clazz.school.id AND month(md.measurableDate)=month(md.measurableDate) "
+			+ "GROUP BY month(md.measurableDate) having COUNT(md.studentSchoolAssoc.clazz.school.id)>0 ORDER BY month(md.measurableDate) asc")
+	public List<Object[]> listOfMeasurableParamDataNumSchoolsByMonth();
+	
+	@Query(nativeQuery=true,  value="select sum(measurable0_.measurable_param_value) as col_0_0_, school3_.school_name as col_1_0_ from measurable_param_data measurable0_ cross join student_school_assoc studentsch1_ cross join class classdetai2_ cross join school school3_ where measurable0_.stud_schl_assoc_id=studentsch1_.id and studentsch1_.class_id=classdetai2_.id and classdetai2_.school_id=school3_.id group by classdetai2_.school_id order by col_0_0_ desc limit 5")
+	public List<Object[]> listOfMeasurableParamDataOfTopSchool();
+	
+	@Query( "select COUNT(md.lastUpdatedUserId), lastUpdatedUserId"
+			+ " FROM MeasurableParamData md "
+			+ " GROUP BY md.lastUpdatedUserId ORDER BY md.lastUpdatedUserId asc")
+	public List<Object[]> listOfMeasurableParamDataOfTopPerformer();
 }

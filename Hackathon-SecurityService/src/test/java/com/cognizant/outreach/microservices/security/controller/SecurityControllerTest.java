@@ -31,6 +31,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.cognizant.outreach.microservices.security.controller.SecurityController;
 import com.cognizant.outreach.microservices.security.model.User;
@@ -70,30 +72,70 @@ public class SecurityControllerTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testInvalidToken() throws Exception {
-		HttpEntity<Object> userJson = getHttpEntity(
-				"{\"apiToken\": \"12343553411\", \"userId\": \"magesh\"}");
+	public void testValidLoginAndToken() throws Exception {
+		
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-		ResponseEntity<String> response = template.postForEntity("/security/validatetoken", userJson, String.class);
+		MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+		map.add("userId", "magesh");
+		map.add("password", "magesh");
 
-		Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+		HttpEntity<MultiValueMap<String, String>> requestParam = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+		ResponseEntity<User> response = template.postForEntity("/login", requestParam, User.class);
+		
+		User user = new User();
+		user.setApiToken(response.getBody().getApiToken());
+		user.setUserId("magesh");
+
+		ResponseEntity<String> response1 = template.postForEntity("/validatetoken", user, String.class);
+
+		Assert.assertEquals(HttpStatus.ACCEPTED, response1.getStatusCode());
 	}
 	
+
+	
+	
 	/**
-	 * To check if the passed invalid user id and password
+	 * To check if the passed invalid token
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void testInvalidUserIdPassword() throws Exception {
-		HttpEntity<Object> userJson = getHttpEntity(
-				"{\"userid\": \"magesh12\", \"password\": \"magesh\" }");
+	public void testInValidToken() throws Exception {
 
-		ResponseEntity<User> response = template.postForEntity("/security/login", userJson, User.class);
+		User user = new User();
+		user.setApiToken("12334");
+		user.setUserId("magesh");
+
+		ResponseEntity<String> response1 = template.postForEntity("/validatetoken", user, String.class);
+
+		Assert.assertEquals(HttpStatus.UNAUTHORIZED, response1.getStatusCode());
+	}
+	
+	
+	/**
+	 * To check if the passed invalid login
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testInValidLogin() throws Exception {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+		MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+		map.add("userId", "magesh");
+		map.add("password", "magesh123");
+
+		HttpEntity<MultiValueMap<String, String>> requestParam = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+		ResponseEntity<User> response = template.postForEntity("/login", requestParam, User.class);
 
 		Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
 	}
-	
 	
 	private HttpEntity<Object> getHttpEntity(Object body) {
 		HttpHeaders headers = new HttpHeaders();

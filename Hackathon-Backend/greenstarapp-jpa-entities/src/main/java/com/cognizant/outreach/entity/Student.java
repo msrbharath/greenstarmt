@@ -24,7 +24,7 @@ public class Student extends BaseEntity {
 	@Temporal(TemporalType.DATE)
 	private Date dob;
 
-	@Column(nullable = false, length = 45)
+	@Column(nullable = true, length = 45)
 	private String address;
 
 	/**

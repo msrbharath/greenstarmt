@@ -14,17 +14,23 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Load param value data from excel
  * 
  * @author Magesh
  */
+@Component
 public class ExcelDataLoadHelper {
+	
+	protected Logger logger = LoggerFactory.getLogger(ExcelDataLoadHelper.class);
 
-	public static Map<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<Integer, Integer>>>> 
+	public Map<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<Integer, Integer>>>> 
 			extractParamValueDataFromExcel(File inputFile) throws IOException {
-        System.out.println("Retreiving  Data"+ inputFile.getName() + ".....");
+        logger.debug("Retreiving  Data {} {}", inputFile.getName() , ".....");
 		FileInputStream excelFile = new FileInputStream(inputFile);
 		Workbook workbook = new XSSFWorkbook(excelFile);
 		// Holds <monthname<Studentname,<parametername,<day,value>>>>
@@ -33,7 +39,7 @@ public class ExcelDataLoadHelper {
 		for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
 			Sheet datatypeSheet = workbook.getSheetAt(sheetIndex);
 			String sheetMonthName = datatypeSheet.getSheetName().trim();
-			System.out.println("Name of the Month ==> " + sheetMonthName);
+			logger.debug("Name of the Month ==> {}" , sheetMonthName);
 			Iterator<Row> iterator = datatypeSheet.iterator();
 
 			// Holds <Studentname,<parametername,<day,value>>>
@@ -110,21 +116,21 @@ public class ExcelDataLoadHelper {
 		// To check the with standalone
 		/*for (Map.Entry<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<Integer, Integer>>>> entry : monthWiseValues
 				.entrySet()) {
-			System.out.println("Month ==> " + entry.getKey());
+			logger.debug(("Month ==> " + entry.getKey());
 			for (Map.Entry<String, LinkedHashMap<String, LinkedHashMap<Integer, Integer>>> entry0 : entry.getValue()
 					.entrySet()) {
-				System.out.println("Parameter Type ==> " + entry0.getKey());
+				logger.debug(("Parameter Type ==> " + entry0.getKey());
 				for (Map.Entry<String, LinkedHashMap<Integer, Integer>> entry1 : entry0.getValue().entrySet()) {
-					System.out.println("Student Name ==> " + entry1.getKey());
+					logger.debug(("Student Name ==> " + entry1.getKey());
 					StringBuffer buffer = new StringBuffer();
 					for (Map.Entry<Integer, Integer> entry2 : entry1.getValue().entrySet()) {
 						buffer.append(entry2.getKey()).append(" # ").append(entry2.getValue()).append("||");
 					}
-					System.out.println(buffer.toString());
+					logger.debug((buffer.toString());
 				}
 			}
 		}*/
-		System.out.println("Retreiving  Data completed!");
+		logger.debug("Retreiving  Data completed!");
 		return monthWiseValues;
 	}
 }

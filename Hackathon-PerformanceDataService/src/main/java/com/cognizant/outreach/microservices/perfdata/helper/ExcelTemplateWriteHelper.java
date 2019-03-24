@@ -1,3 +1,17 @@
+/**
+ * ${ExcelTemplateWriteHelper}
+ *
+ *  2019 Cognizant Technology Solutions. All Rights Reserved.
+ *
+ *  This software is the confidential and proprietary information of Cognizant Technology
+ *  Solutions("Confidential Information").  You shall not disclose or use Confidential
+ *  Information without the express written agreement of Cognizant Technology Solutions.
+ *  Modification Log:
+ *  -----------------
+ *  Date                   Author           Description
+ *  18/Feb/2019            Panneer        	Developed base code structure
+ *  ---------------------------------------------------------------------------
+ */
 package com.cognizant.outreach.microservices.perfdata.helper;
 
 import java.io.ByteArrayOutputStream;
@@ -24,12 +38,25 @@ import com.cognizant.outreach.microservices.perfdata.vo.PerformanceDayVO;
 import com.cognizant.outreach.microservices.perfdata.vo.PerformanceHeaderVO;
 import com.cognizant.outreach.microservices.perfdata.vo.PerformanceRowVO;
 
+/**
+ * ExcelTemplateWriteHelper class to handle generate the performance bulk upload excel template. 
+ * 
+ * @author Panneer
+ */
+
 @Component
 public class ExcelTemplateWriteHelper {
 
 	public static final String EXCEL_INTRODUCTION_SHEETNAME = "Introduction";
 	public static final String EXCEL_DATA_SHEETNAME = "Performance Measurable Data";
 
+	/**
+	 * Method to generate the performance bulk upload template excel sheet 
+	 * 
+	 * @param performanceDataTableVO
+	 * @return
+	 * @throws IOException
+	 */
 	public byte[] getExcelTemplateFile(PerformanceDataTableVO performanceDataTableVO) throws IOException {
 
 		// Create Work book
@@ -47,10 +74,21 @@ public class ExcelTemplateWriteHelper {
 		return bos.toByteArray();
 	}
 
+	/**
+	 * Method to create workbook.
+	 * 
+	 * @return XSSFWorkbook
+	 */
 	private XSSFWorkbook createWorkBook() {
 		return new XSSFWorkbook();
 	}
 
+	/**
+	 * Method to generate the performance bulk upload introduction sheet.
+	 * 
+	 * @param workbook
+	 * @param performanceDataTableVO
+	 */
 	private void createIntroductionSheet(XSSFWorkbook workbook, PerformanceDataTableVO performanceDataTableVO) {
 
 		XSSFSheet sheet = workbook.createSheet(EXCEL_INTRODUCTION_SHEETNAME);
@@ -175,6 +213,13 @@ public class ExcelTemplateWriteHelper {
 		setBorder(cellMerge, headerCell, sheet, workbook);
 	}
 
+	/**
+	 * Method to generate the performance bulk upload data sheet.
+	 * Including student and measurable parameter information.
+	 * 
+	 * @param workbook
+	 * @param performanceDataTableVO
+	 */
 	private void createDataSheet(XSSFWorkbook workbook, PerformanceDataTableVO performanceDataTableVO) {
 
 		XSSFSheet sheet = workbook.createSheet(EXCEL_DATA_SHEETNAME);
@@ -198,7 +243,7 @@ public class ExcelTemplateWriteHelper {
 		sheet.addMergedRegion(cellMerge);
 		setBorder(cellMerge, headerNameCell, sheet, workbook);
 		
-		// Main Header
+		// Dynamic Main Header
 		int dynamicColumnStart = 2;
 		for(PerformanceHeaderVO performanceHeaderVO : performanceDataTableVO.getHeaders()) {
 			Cell headerCell = row.createCell(dynamicColumnStart);
@@ -217,8 +262,6 @@ public class ExcelTemplateWriteHelper {
 				
 				setBorder(new CellRangeAddress(1, 1, dynamicColumnStart, dynamicColumnStart), headerCell1, sheet, workbook);
 				
-				// setCellWidth(sheet, dynamicColumnStart, subPerformanceHeaderVO.getTitle().length());
-				
 				dynamicColumnStart++;
 			}
 		}
@@ -229,14 +272,17 @@ public class ExcelTemplateWriteHelper {
 			
 			Row dataRow = sheet.createRow(rowStartIndex);
 			
+			// Student roll number
 			Cell dataCell = dataRow.createCell(0);
 			dataCell.setCellValue(performanceRowVO.getRollId());
 			setBorder(new CellRangeAddress(rowStartIndex, rowStartIndex, 0, 0), dataCell, sheet, workbook);
 			
+			// Student name
 			dataCell = dataRow.createCell(1);
 			dataCell.setCellValue(performanceRowVO.getStudentName());
 			setBorder(new CellRangeAddress(rowStartIndex, rowStartIndex, 1, 1), dataCell, sheet, workbook);
 			
+			// Student performance measurable parameter value. by default to set value as '1'
 			int dynamicDataColumnStart = 2;
 			for(PerformanceDayVO performanceDayVO : performanceRowVO.getPerformanceDays()) {
 				for(PerformanceDataVO performanceDataVO : performanceDayVO.getPerformanceData()) {
@@ -248,11 +294,17 @@ public class ExcelTemplateWriteHelper {
 				}
 			}			
 			rowStartIndex++;
-		}
-		
-		System.out.println("BorderStyle.THIN.ordinal() :: "+BorderStyle.THIN.ordinal());
+		}		
 	}
 	
+	/**
+	 * Method to set excel sheet range level cell border.
+	 * 
+	 * @param region
+	 * @param cell
+	 * @param sheet
+	 * @param workbook
+	 */
 	private static void setBorder(CellRangeAddress region, Cell cell, XSSFSheet sheet, XSSFWorkbook workbook) {
 		
 		RegionUtil.setBorderBottom(1, region, sheet, workbook);
@@ -264,6 +316,11 @@ public class ExcelTemplateWriteHelper {
 		cellStyle.setFillBackgroundColor(IndexedColors.WHITE.getIndex());
 	}
 	
+	/**
+	 * Method to set excel sheet individual cell border.
+	 *  
+	 * @param cell
+	 */
 	private static void setCellBorder(Cell cell) {
 		CellStyle cellStyle = cell.getCellStyle();
 		cellStyle.setBorderBottom((short) BorderStyle.THIN.ordinal());
@@ -272,6 +329,12 @@ public class ExcelTemplateWriteHelper {
 		cellStyle.setBorderTop((short) BorderStyle.THIN.ordinal());
 	}
 	
+	/**
+	 * Method to set header cell style.
+	 * 
+	 * @param workBook
+	 * @return
+	 */
 	private static CellStyle getHeaderCellStyle(Workbook workBook) {
 
         CellStyle cellStyle = workBook.createCellStyle();
@@ -289,6 +352,12 @@ public class ExcelTemplateWriteHelper {
         return cellStyle;
 	}
 	
+	/**
+	 * Method to set value cell style and alignment for introduction sheet.
+	 * 
+	 * @param workBook
+	 * @return cellStyle
+	 */
 	private static CellStyle getIntroductionCellStyle(Workbook workBook) {
 
         CellStyle cellStyle = workBook.createCellStyle();
@@ -306,6 +375,12 @@ public class ExcelTemplateWriteHelper {
         return cellStyle;
 	}
 	
+	/**
+	 * Method to set header cell style and alignment for introduction sheet.
+	 * 
+	 * @param workBook
+	 * @return cellStyle
+	 */
 	private static CellStyle getIntroductionHeaderCellStyle(Workbook workBook) {
 
         CellStyle cellStyle = workBook.createCellStyle();
@@ -323,6 +398,12 @@ public class ExcelTemplateWriteHelper {
         return cellStyle;
 	}
 	
+	/**
+	 * Method to set value items cell style and alignment for introduction sheet.
+	 * 
+	 * @param workBook
+	 * @return cellStyle
+	 */
 	private static CellStyle getIntroductionValueItemsCellStyle(Workbook workBook) {
 
         CellStyle cellStyle = workBook.createCellStyle();
@@ -339,6 +420,12 @@ public class ExcelTemplateWriteHelper {
         return cellStyle;
 	}
 		
+	/**
+	 * Method to set cell style for data cell.
+	 * 
+	 * @param cell
+	 * @return cellStyle
+	 */
 	private static CellStyle setDataCellStyle(Cell cell) {
 
         CellStyle cellStyle = cell.getCellStyle();

@@ -24,11 +24,79 @@ import java.util.List;
  */
 public class SchoolVO {
 
-	public long id;
+	private long id;
 	
-	public String schoolName;
+	private String userId;
 	
-	public List<ClassVO> classList;
+	private String action;
+	
+	private String schoolName;
+	
+	private String district;
+	
+	private String state;
+	
+	private String cityName;
+	
+	private String address;
+	
+	private List<TeamNameCountVO> schoolTeamList;
+	
+	private List<ClassVO> classList;
+	
+	private List<HolidayVO> holidays;
+	
+	private List<WeekendWorkingDayVO> weekendWorkingDays;
+	
+	private List<PerformanceParamVO> perfParamList;
+	
+	public String getAction() {
+		return action;
+	}
+
+	public List<TeamNameCountVO> getSchoolTeamList() {
+		return schoolTeamList;
+	}
+
+	public void setSchoolTeamList(List<TeamNameCountVO> schoolTeamList) {
+		this.schoolTeamList = schoolTeamList;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public List<PerformanceParamVO> getPerfParamList() {
+		return perfParamList;
+	}
+
+	public void setPerfParamList(List<PerformanceParamVO> perfParamList) {
+		this.perfParamList = perfParamList;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public List<HolidayVO> getHolidays() {
+		return holidays;
+	}
+
+	public void setHolidays(List<HolidayVO> holidays) {
+		this.holidays = holidays;
+	}
+
+	public List<WeekendWorkingDayVO> getWeekendWorkingDays() {
+		return weekendWorkingDays;
+	}
+
+	public void setWeekendWorkingDays(List<WeekendWorkingDayVO> weekendWorkingDays) {
+		this.weekendWorkingDays = weekendWorkingDays;
+	}
 
 	public long getId() {
 		return id;
@@ -54,4 +122,35 @@ public class SchoolVO {
 		this.classList = classList;
 	}
 
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
 }

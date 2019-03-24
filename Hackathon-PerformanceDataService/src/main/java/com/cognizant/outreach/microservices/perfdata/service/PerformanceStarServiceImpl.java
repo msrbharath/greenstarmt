@@ -15,13 +15,14 @@
 package com.cognizant.outreach.microservices.perfdata.service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,27 +87,44 @@ public class PerformanceStarServiceImpl implements PerformanceStarService {
 			if (!StringUtils.isEmpty(performanceStarVO.getParamOne())) {
 				String[] colorCodes = generateStarColorCodes(searchVO, measurableParamList.get(0).getId(),
 						monthHolidays, weekendWorkingdays);
-				performanceStarVO.setParamOneMonthColorCodes(colorCodes);
+				performanceStarVO.setParamOneMonthColorCodes(addColorCoderForNonMonthDays(colorCodes));
 			}
 
 			// populate data for Second parameter star
 			if (!StringUtils.isEmpty(performanceStarVO.getParamTwo())) {
 				String[] colorCodes = generateStarColorCodes(searchVO, measurableParamList.get(1).getId(),
 						monthHolidays, weekendWorkingdays);
-				performanceStarVO.setParamTwoMonthColorCodes(colorCodes);
+				performanceStarVO.setParamTwoMonthColorCodes(addColorCoderForNonMonthDays(colorCodes));
 			}
 
 			// populate data for third parameter star
 			if (!StringUtils.isEmpty(performanceStarVO.getParamThree())) {
 				String[] colorCodes = generateStarColorCodes(searchVO, measurableParamList.get(2).getId(),
 						monthHolidays, weekendWorkingdays);
-				performanceStarVO.setParamThreeMonthColorCodes(colorCodes);
+				performanceStarVO.setParamThreeMonthColorCodes(addColorCoderForNonMonthDays(colorCodes));
 			}
 		}
 		logger.debug("Completed service for generating star");
 		return Optional.of(performanceStarVO);
 	}
 
+	/**
+	 * To add color code for non month days
+	 * 
+	 * @param colorCodes
+	 * @return String[]
+	 */
+	private  String[] addColorCoderForNonMonthDays(String[] colorCodes) {
+		List<String> colorCodeList = new ArrayList<>();
+		colorCodeList.addAll(Arrays.asList(colorCodes));
+		if(colorCodes.length != 31) {
+			for (int i = colorCodes.length ; i < 31 ; i++) {
+				colorCodeList.add(StarColorCodes.HOLIDAY.getColorCode());
+			}
+		}
+		return colorCodeList.stream().toArray(String[]::new);
+	}
+	
 	/**
 	 * To populate performance parameter names for the given school
 	 * 
@@ -286,10 +304,10 @@ public class PerformanceStarServiceImpl implements PerformanceStarService {
 
 		// check the day is not weekend or not configured holiday. Means it is working
 		// day and no data entered
-		if (!(weekDay == Calendar.SATURDAY || weekDay == Calendar.SUNDAY) && !(monthHolidays.contains(monthDay))) {
+		if (!(weekDay == DateTimeConstants.SATURDAY || weekDay == DateTimeConstants.SUNDAY) && !(monthHolidays.contains(monthDay))) {
 			// Set no data color code. Means data is not entered by user
 			colorCode = StarColorCodes.NO_DATA.getColorCode();
-		} else if ((weekDay == Calendar.SATURDAY || weekDay == Calendar.SUNDAY)
+		} else if ((weekDay == DateTimeConstants.SATURDAY || weekDay == DateTimeConstants.SUNDAY)
 				&& (weekendWorkingDays.contains(monthDay))) {
 			// Check if the day is weekend and it is configured as working day
 			// Set no data color code. Means data is not entered by user
@@ -336,8 +354,8 @@ public class PerformanceStarServiceImpl implements PerformanceStarService {
 	 * Method to get a month map for the given month with value as weekday name
 	 * 
 	 * @param monthNumber
-	 * @return Map<Integer, String> Default month map with key as days of the given
-	 *         month and
+	 * @return Map<Integer, Integer> Default month map with key as days of the given
+	 *         month and value as weekday of the month
 	 */
 	private Map<Integer, Integer> getMonthMap(int monthNumber) {
 		org.joda.time.LocalDate firstDayOfMonth = new org.joda.time.LocalDate(2019, monthNumber, 1);
@@ -345,6 +363,7 @@ public class PerformanceStarServiceImpl implements PerformanceStarService {
 		Map<Integer, Integer> monthMap = new LinkedHashMap<Integer, Integer>();
 		org.joda.time.LocalDate currentDay = firstDayOfMonth;
 		for (int i = 1; i <= lastDayOfmonth; i++) {
+			
 			monthMap.put(i, currentDay.dayOfWeek().get());
 			currentDay = currentDay.plusDays(1);
 		}

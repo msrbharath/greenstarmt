@@ -16,17 +16,6 @@ public class PerformanceRowVO {
 	public PerformanceRowVO() {
 	}
 
-	public PerformanceRowVO(String rollId, String studentName, String schoolName, String className, String section,
-			String teamName, List<PerformanceDayVO> performanceDays) {
-		this.rollId = rollId;
-		this.studentName = studentName;
-		this.schoolName = schoolName;
-		this.className = className;
-		this.section = section;
-		this.teamName = teamName;
-		this.performanceDays = performanceDays;
-	}
-
 	public String getRollId() {
 		return rollId;
 	}

@@ -9,22 +9,39 @@ management:
       enabled: true
     shutdown:
       enabled: true
-    
+
 
 zuul:
   prefix: /api
   routes:
-    user: 
-      path: /auth/user/**
-      serviceId: user-service
     security: 
       path: /security/**
       serviceId: security-service
-       
+    admin:
+      path: /admin/**
+      serviceId: security-service
+    school: 
+      path: /school/**
+      serviceId: school-service
+    perfdata: 
+      path: /perfdata/**
+      serviceId: perfdata-service
+  host:
+    connect-timeout-millis: 60000 
+    socket-timeout-millis: 60000
+    connection-request-timeout-millis: 60000
 
-ribbon:
-  eureka:
-    enabled: true
+hystrix: 
+  command: 
+    default: 
+      execution: 
+        isolation: 
+          thread: 
+            timeoutInMilliseconds: 60000
+ribbon: 
+  ReadTimeout: 60000
+  connection-timeout: 60000
+
 
 eureka:
   client:
@@ -40,4 +57,7 @@ logging:
     ROOT: INFO
     org.springframework.web: DEBUG
     com.cognizant.outreach: INFO
-  file: api-gateway.log
+  pattern:
+      console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([${springAppName:-},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file: gateway-server.log

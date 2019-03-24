@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
@@ -22,8 +24,13 @@ import com.cognizant.outreach.util.DateUtil;
 @Component
 public class MeasurableParamDataHelper {
 
+	protected Logger logger = LoggerFactory.getLogger(MeasurableParamDataHelper.class);
+	
 	@Autowired
 	MeasurableParamDataRepository measurableParamDataRepository;
+	
+	@Autowired
+	ExcelDataLoadHelper dataLoadHelper;
 
 	public List<Long> createParamData(Map<Long, Map<Long, List<StudentSchoolAssoc>>> schoolClassStudentAssocMap,
 			Map<Long, List<ClassDetail>> classDetailMap, Map<Long, List<MeasurableParam>> measurableParamMap)
@@ -33,9 +40,9 @@ public class MeasurableParamDataHelper {
 		List<Long> allParamDataIds = new ArrayList<>();
 		for (Map.Entry<Long, Map<Long, List<StudentSchoolAssoc>>> schoolEntry : schoolClassStudentAssocMap.entrySet()) {
 			long schoolId = schoolEntry.getKey();
-			System.out.println("School Id: " + schoolId);
+			logger.debug("School Id: {}",schoolId);
 			for (Map.Entry<Long, List<StudentSchoolAssoc>> associationEntry : schoolEntry.getValue().entrySet()) {
-				System.out.println("Class Id: " + associationEntry.getKey());
+				logger.debug("Class Id: {}", associationEntry.getKey());
 				long classId = associationEntry.getKey();
 				
 				ClassDetail classDetail = getClassDetail(classId, schoolId, classDetailMap);
@@ -47,7 +54,7 @@ public class MeasurableParamDataHelper {
 				String fileName = shoolNumber + "-" + sectionName+"-TestData.xlsx";
 				File file = ResourceUtils.getFile("classpath:testdata/"+fileName);
 				
-				Map<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<Integer, Integer>>>> monthWiseValues = ExcelDataLoadHelper
+				Map<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<Integer, Integer>>>> monthWiseValues = dataLoadHelper
 						.extractParamValueDataFromExcel(file);
 
 				allParamDataIds.addAll(insertParamData(studentSchoolAssocs, "JAN", monthWiseValues.get("JAN"),

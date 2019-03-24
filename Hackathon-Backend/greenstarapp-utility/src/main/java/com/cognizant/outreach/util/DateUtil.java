@@ -19,8 +19,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -35,6 +37,8 @@ public class DateUtil {
 	public static final DateFormat VIEW_FORMAT = new SimpleDateFormat("dd-MMM-yyyy");
 	public static final DateTimeFormatter DATE_FORMAT_DD_MMM_YYYY = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
 	public static final DateTimeFormatter DATE_FORMAT_YYYY_MM_DD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+	public static final DateFormat DATE_FORMAT_MM_DD_YYYY = new SimpleDateFormat("mm-dd-yyyy");
 
 	public enum MonthValue {
 		JANUARY(1), FEBRUARY(2), MARCH(3), APRIL(4), MAY(5), JUNE(6), JULY(7), AUGUST(8), SEPTEMBER(9), OCTOBER(
@@ -85,6 +89,16 @@ public class DateUtil {
 
 		return dateObject;
 	}
+	
+	public static String getDBDateString(Date dateValue) throws ParseException {
+
+		String dateStr = null;
+		if (null != dateValue) {
+			dateStr = DB_FORMAT.format(dateValue);
+		}
+
+		return dateStr;
+	}
 
 	public static String getViewLocalDate(LocalDate localDate) {
 		String dateValue = null;
@@ -94,8 +108,18 @@ public class DateUtil {
 		return dateValue;
 	}
 
+	public static Date convertToDBFormat(String dateValue) throws ParseException {
+		Date dateObject = null;
+		dateObject = DATE_FORMAT_MM_DD_YYYY.parse(dateValue);
+		return getDatabaseDate(DB_FORMAT.format(dateObject));
+	}
+
 	public static LocalDate getLocalDate(Date date) {
 		return new java.sql.Date(date.getTime()).toLocalDate();
+	}
+	
+	public static LocalDateTime getLocalDateTime(Date date) {
+		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 	}
 
 	public static String getMonthName(int month) {
@@ -157,5 +181,13 @@ public class DateUtil {
 		return IntStream.iterate(0, i -> i + 1).limit(numOfDaysBetween).mapToObj(i -> startLocalDate.plusDays(i))
 				.collect(Collectors.toList());
 	}
-
+	
+	public static long getMinutesDifferenceBetweenTwoDates(Date date1, Date date2) {
+		
+		LocalDateTime localDateTime1 = getLocalDateTime(date1);		
+		LocalDateTime localDateTime2 = getLocalDateTime(date2);
+		
+		return java.time.Duration.between(localDateTime1, localDateTime2).toMinutes();
+	}
+	
 }

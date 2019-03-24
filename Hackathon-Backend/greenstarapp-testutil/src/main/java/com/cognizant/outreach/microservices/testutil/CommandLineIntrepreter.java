@@ -13,8 +13,9 @@ public class CommandLineIntrepreter implements CommandLineRunner {
 
     @Override
     public void run(String...args) throws Exception {
-    	/*testutilService.createTestData();
-    	testutilService.deleteTestData();*/
+    	testutilService.createTestData();
+    	testutilService.createMeasurableParamData();
+    	/*testutilService.deleteTestData();*/
     }
     
     

@@ -43,8 +43,8 @@ public class PerformanceDataDAOImpl implements PerformanceDataDAO {
 	 * @see com.cognizant.outreach.microservices.perfdata.dao.PerformanceDataDAO#saveOrUpdateMeasurableParamData(com.cognizant.outreach.entity.MeasurableParamData)
 	 */
 	@Override
-	public void saveOrUpdateMeasurableParamData(MeasurableParamData measurableParamData) {
-		performanceDataRepository.save(measurableParamData);
+	public MeasurableParamData saveOrUpdateMeasurableParamData(MeasurableParamData measurableParamData) {
+		return performanceDataRepository.save(measurableParamData);
 	}
 	
 	/* (non-Javadoc)

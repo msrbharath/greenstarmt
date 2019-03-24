@@ -2,14 +2,20 @@ package com.cognizant.outreach.microservices.perfdata.vo.metrics;
 
 import java.util.List;
 
+/**
+ * @author Bharath
+ *
+ */
 public class EncouragingMetricsVO {
 
 	private String metricsType;
 	private String classId;
 	private String className;
 	private List<SectionDataVO> sectionData;
-	private Integer month;
-	private String monthName;
+	private Integer month1;
+	private String monthName1;
+	private Integer month2;
+	private String monthName2;
 	private AverageRowVO averageRow;
 
 	public String getMetricsType() {
@@ -44,20 +50,36 @@ public class EncouragingMetricsVO {
 		this.sectionData = sectionData;
 	}
 
-	public Integer getMonth() {
-		return month;
+	public Integer getMonth1() {
+		return month1;
 	}
 
-	public void setMonth(Integer month) {
-		this.month = month;
+	public void setMonth1(Integer month1) {
+		this.month1 = month1;
 	}
 
-	public String getMonthName() {
-		return monthName;
+	public String getMonthName1() {
+		return monthName1;
 	}
 
-	public void setMonthName(String monthName) {
-		this.monthName = monthName;
+	public void setMonthName1(String monthName1) {
+		this.monthName1 = monthName1;
+	}
+
+	public Integer getMonth2() {
+		return month2;
+	}
+
+	public void setMonth2(Integer month2) {
+		this.month2 = month2;
+	}
+
+	public String getMonthName2() {
+		return monthName2;
+	}
+
+	public void setMonthName2(String monthName2) {
+		this.monthName2 = monthName2;
 	}
 
 	public AverageRowVO getAverageRow() {

@@ -21,9 +21,25 @@ package com.cognizant.outreach.microservices.school.vo;
  *
  */
 public class StudentVO {
-	public long id;
+	private long id;
 	
-	public String studentName;
+	private String studentName;
+	
+	private long associationId;
+	
+	private long classId;
+	
+	private String teamName;
+	
+	private String rollId;
+	
+	public long getClassId() {
+		return classId;
+	}
+
+	public void setClassId(long classId) {
+		this.classId = classId;
+	}
 
 	public long getId() {
 		return id;
@@ -41,4 +57,27 @@ public class StudentVO {
 		this.studentName = studentName;
 	}
 
+	public long getAssociationId() {
+		return associationId;
+	}
+
+	public void setAssociationId(long associationId) {
+		this.associationId = associationId;
+	}
+
+	public String getTeamName() {
+		return teamName;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
+	}
+
+	public String getRollId() {
+		return rollId;
+	}
+
+	public void setRollId(String rollId) {
+		this.rollId = rollId;
+	}
 }

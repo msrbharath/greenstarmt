@@ -25,7 +25,7 @@ public class RoleDetail extends BaseEntity {
 
 	// BI - directional many-to-one association to RoleMenuMapping
 	@OneToMany(mappedBy = "roleDetail")
-	private List<RoleMenuMapping> roleMenuMappings;
+	private List<RoleMenuMapping> roleMenuMapping;
 
 	// BI - directional many-to-one association to UserRoleMapping
 	@OneToMany(mappedBy = "roleDetail")
@@ -62,18 +62,18 @@ public class RoleDetail extends BaseEntity {
 	}
 
 	/**
-	 * @return the roleMenuMappings
+	 * @return the roleMenuMapping
 	 */
-	public List<RoleMenuMapping> getRoleMenuMappings() {
-		return roleMenuMappings;
+	public List<RoleMenuMapping> getRoleMenuMapping() {
+		return roleMenuMapping;
 	}
 
 	/**
-	 * @param roleMenuMappings
-	 *            the roleMenuMappings to set
+	 * @param roleMenuMapping
+	 *            the roleMenuMapping to set
 	 */
-	public void setRoleMenuMappings(List<RoleMenuMapping> roleMenuMappings) {
-		this.roleMenuMappings = roleMenuMappings;
+	public void setRoleMenuMapping(List<RoleMenuMapping> roleMenuMapping) {
+		this.roleMenuMapping = roleMenuMapping;
 	}
 
 	/**

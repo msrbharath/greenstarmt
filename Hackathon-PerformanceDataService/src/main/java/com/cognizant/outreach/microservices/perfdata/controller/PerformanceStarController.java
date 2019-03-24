@@ -17,7 +17,6 @@ package com.cognizant.outreach.microservices.perfdata.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,7 +32,6 @@ import com.cognizant.outreach.microservices.perfdata.vo.star.PerformanceStarVO;
  * @author 371793
  */
 @RestController
-@CrossOrigin
 public class PerformanceStarController {
 	
 	@Autowired
@@ -46,9 +44,9 @@ public class PerformanceStarController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, path = "/perfstar/generateStar")
 	public ResponseEntity<PerformanceStarVO> generatePerformanceStar(@RequestBody PerformanceStarSearchDataVO performanceStarSearchDataVO) {
-		PerformanceStarVO performanceStarVO1 = performanceStarService.getStarData(performanceStarSearchDataVO).get();
+		PerformanceStarVO performanceStarVO = performanceStarService.getStarData(performanceStarSearchDataVO).get();
 
-		return ResponseEntity.status(HttpStatus.OK).body(performanceStarVO1);
+		return ResponseEntity.status(HttpStatus.OK).body(performanceStarVO);
 	}
 	
 }

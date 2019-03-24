@@ -22,6 +22,8 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -51,6 +53,8 @@ import com.cognizant.outreach.util.modal.ApiResponse;
  */
 @Service
 public class BulkUploadPerfDataServiceImpl implements BulkUploadPerfDataService {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(BulkUploadPerfDataServiceImpl.class);
 	
 	public static final String SUCCESS = "SUCCESS";
 	public static final String ERROR = "ERROR";
@@ -84,17 +88,15 @@ public class BulkUploadPerfDataServiceImpl implements BulkUploadPerfDataService 
 		
 		PerformanceDataTableVO performanceDataTableVO = new PerformanceDataTableVO();
 		performanceDataTableVO.setSchoolId(searchPerformanceData.getSchoolId());
-		
-		// Fetch school Name by school id (to show in excel sheet)
-		performanceDataTableVO.setSchoolName(performanceDataDAO.findSchoolNameBySchoolId(searchPerformanceData.getSchoolId()));
+		performanceDataTableVO.setSchoolName(searchPerformanceData.getSchoolName());
 		performanceDataTableVO.setClassId(searchPerformanceData.getClassId());
-		
-		// Fetch class Name by class id (to show in excel sheet)
-		performanceDataTableVO.setClassName(performanceDataDAO.findClassNameByClassId(searchPerformanceData.getClassId()));
+		performanceDataTableVO.setClassName(searchPerformanceData.getClassName());
 		performanceDataTableVO.setMonth(searchPerformanceData.getMonth());
 		performanceDataTableVO.setMonthName(DateUtil.getMonthName(searchPerformanceData.getMonth()));
 		performanceDataTableVO.setWeek(searchPerformanceData.getWeek());
 		performanceDataTableVO.setTotalSubTitle(measurableParamList.size());
+		
+		LOGGER.info("Performance Bulk upload template for month of {}", performanceDataTableVO.getMonthName());
 		
 		// Individual dates for given school id, month and current year.
 		List<String> monthDates = performanceDataHelper.getMonthLevelWorkingDays(searchPerformanceData.getSchoolId(), DateUtil.getCurrentYear(), searchPerformanceData.getMonth());
@@ -126,6 +128,8 @@ public class BulkUploadPerfDataServiceImpl implements BulkUploadPerfDataService 
 			if(errorMessages.size() <= 0) {
 				// Read constant search parameter from uploaded bulk upload file.
 				SearchPerformanceData searchPerformanceData = excelTemplateReadHelper.getSearchParamFromTemplate(workbook);
+				
+				LOGGER.info("Performance Bulk upload template for month of {}", searchPerformanceData.getMonth());
 				
 				// Populate the performance measurement date for validation purpose.
 				List<String> monthDates = performanceDataHelper.getMonthLevelWorkingDays(searchPerformanceData.getSchoolId(), DateUtil.getCurrentYear(), searchPerformanceData.getMonth());
@@ -175,7 +179,8 @@ public class BulkUploadPerfDataServiceImpl implements BulkUploadPerfDataService 
 				aprResponse = new ApiResponse<>(HttpStatus.OK.value(), null, errorMessages);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.debug("Exception occured while uploading monthly performance data {} =>", e.getMessage());
+			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Error", e.getMessage());
 		}
 		return aprResponse;
 	}
@@ -186,16 +191,17 @@ public class BulkUploadPerfDataServiceImpl implements BulkUploadPerfDataService 
 	 * @param measurableParamMap
 	 * @param templateDataMap
 	 * @return String
+	 * @throws Exception 
 	 */
-	private String saveMeasurableParameter(PerformanceDataTableVO performanceDataTableVO, Map<String, MeasurableParam> measurableParamMap, Map<String, Map<String, String>> templateDataMap) {
+	private String saveMeasurableParameter(PerformanceDataTableVO performanceDataTableVO, Map<String, MeasurableParam> measurableParamMap, Map<String, Map<String, String>> templateDataMap) throws Exception {
 		
 		Date currentDate = new Date();
 		
-		// Fetch student school association object list based on search parameter(school id, class name) 
-		List<StudentSchoolAssoc> studentSchoolAssocList = performanceDataDAO.listOfStudentSchoolAssocBySearchParam(performanceDataTableVO);
-		Map<String, StudentSchoolAssoc> studentSchoolAssocMap = performanceDataHelper.getStudentSchoolAssocMap(studentSchoolAssocList);
-		
 		try {
+			// Fetch student school association object list based on search parameter(school id, class name) 
+			List<StudentSchoolAssoc> studentSchoolAssocList = performanceDataDAO.listOfStudentSchoolAssocBySearchParam(performanceDataTableVO);
+			Map<String, StudentSchoolAssoc> studentSchoolAssocMap = performanceDataHelper.getStudentSchoolAssocMap(studentSchoolAssocList);
+			
 			for(PerformanceRowVO performanceRowVO : performanceDataTableVO.getPerformanceRows()) {
 				
 				Map<String, String> rowDataMap = templateDataMap.get(performanceRowVO.getRollId());
@@ -221,7 +227,8 @@ public class BulkUploadPerfDataServiceImpl implements BulkUploadPerfDataService 
 				}
 			}
 		} catch(Exception e) {
-			return ERROR;
+			LOGGER.error(e.getMessage());
+			throw new Exception(e.getMessage());
 		}
 		return SUCCESS;
 	}

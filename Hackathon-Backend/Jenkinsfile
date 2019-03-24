@@ -1,0 +1,11 @@
+node {
+    withMaven(maven:'localmaven') {
+
+        stage('Checkout') {
+            git url: 'http://172.18.2.18/teamgreenstar/371793-Hackathon-Backend.git', credentialsId: 'mageshgitlabcred', branch: 'master'
+        }
+        stage('Build') {
+		  bat label: 'Maven Build status', script: 'mvn clean install -DskipTests'
+        }
+    }
+}

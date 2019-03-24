@@ -23,18 +23,58 @@ import java.util.List;
  *
  */
 public class ClassVO {
-	public long id;
+	private long id;
 	
-	public String className;
+	private String className;
 	
-	public String sectionName;
+	private String sectionName;
 	
-	public String classAndSectionName;
+	private String userId;
 	
-	public List<StudentVO> studentList;
+	private String classAndSectionName;
 	
-    public List<String> teamList;
+	private List<StudentVO> studentList;
 	
+	private List<String> teamList;
+	
+	private long schoolId;
+	
+	private String teamName;
+	
+	private List<TeamNameCountVO> schoolTeamList;
+	
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public List<TeamNameCountVO> getSchoolTeamList() {
+		return schoolTeamList;
+	}
+
+	public void setSchoolTeamList(List<TeamNameCountVO> schoolTeamList) {
+		this.schoolTeamList = schoolTeamList;
+	}
+
+	public long getSchoolId() {
+		return schoolId;
+	}
+
+	public void setSchoolId(long schoolId) {
+		this.schoolId = schoolId;
+	}
+
+	public String getTeamName() {
+		return teamName;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
+	}
+
 	public String getClassAndSectionName() {
 		return classAndSectionName;
 	}

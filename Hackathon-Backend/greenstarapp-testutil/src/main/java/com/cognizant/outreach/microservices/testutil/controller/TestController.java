@@ -1,8 +1,5 @@
 package com.cognizant.outreach.microservices.testutil.controller;
 
-import java.io.IOException;
-import java.text.ParseException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +19,13 @@ public class TestController {
 	 * To get the list of class for the given name
 	 * 
 	 * @return List of class if present else null
-	 * @throws ParseException 
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "/test")
-	public ResponseEntity<String> generatePerformanceStar() throws ParseException, IOException {
+	public ResponseEntity<String> generatePerformanceStar() throws Exception {
 		testUtilService.createTestData();
 		testUtilService.createMeasurableParamData();
-		testUtilService.deleteTestData();
+		/*testUtilService.deleteTestData();*/
 
 		return ResponseEntity.status(HttpStatus.OK).body("Success");
 	}

@@ -71,5 +71,9 @@ public class ClassDetail extends BaseEntity {
 	public void setSchool(School school) {
 		this.school = school;
 	}
+	
+	public String getClassAndSection() {
+		return this.className + "-" + this.section;
+	}
 
 }

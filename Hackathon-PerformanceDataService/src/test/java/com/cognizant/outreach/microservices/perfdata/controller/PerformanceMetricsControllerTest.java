@@ -14,19 +14,22 @@
  */
 package com.cognizant.outreach.microservices.perfdata.controller;
 
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics;
+import com.cognizant.outreach.util.modal.ApiResponse;
 
 
 /**
@@ -55,44 +58,92 @@ public class PerformanceMetricsControllerTest {
 	public void setup() throws Exception {
 		mockMvc = MockMvcBuilders.standaloneSetup(performanceMetricsController).build();
 	}
-
 	
 	/**
-	 * To check if the passed invalid token
-	 * 
-	 * @throws Exception
-	 *//*
+	 * Test method for {@link com.cognizant.outreach.microservices.perfdata.controller.PerformanceMetricsController#getClasswisePerformanceMetrics(com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics)}.
+	 */
 	@Test
-	public void testInvalidToken() throws Exception {
-		HttpEntity<Object> userJson = getHttpEntity(
-				"{\"apiToken\": \"12343553411\", \"userId\": \"magesh\"}");
-
-		ResponseEntity<String> response = template.postForEntity("/security/validatetoken", userJson, String.class);
-
-		Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+	public void testGetClasswisePerformanceMetrics() {
+		SearchPerformanceMetrics searchPerformanceMetrics = new SearchPerformanceMetrics();
+		searchPerformanceMetrics.setSchoolId(42l);
+		searchPerformanceMetrics.setClassName("I");
+				
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<ApiResponse> response = template.postForEntity("/perfmetrics/classwise", searchPerformanceMetrics, ApiResponse.class);
+		Assert.assertNotNull("Classwise metrics data:", response.getBody());
 	}
-	
-	*//**
-	 * To check if the passed invalid user id and password
-	 * 
-	 * @throws Exception
-	 *//*
+
+	/**
+	 * Test method for {@link com.cognizant.outreach.microservices.perfdata.controller.PerformanceMetricsController#getTeamwisePerformanceMetrics(com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics)}.
+	 */
 	@Test
-	public void testInvalidUserIdPassword() throws Exception {
-		HttpEntity<Object> userJson = getHttpEntity(
-				"{\"userid\": \"magesh12\", \"password\": \"magesh\" }");
-
-		ResponseEntity<User> response = template.postForEntity("/security/login", userJson, User.class);
-
-		Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+	public void testGetTeamwisePerformanceMetrics() {
+		SearchPerformanceMetrics searchPerformanceMetrics = new SearchPerformanceMetrics();
+		searchPerformanceMetrics.setSchoolId(42l);
+		searchPerformanceMetrics.setClassName("I");
+				
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<ApiResponse> response = template.postForEntity("/perfmetrics/teamwise", searchPerformanceMetrics, ApiResponse.class);
+		Assert.assertNotNull("Teamwise metrics data:", response.getBody());
 	}
-	*/
-	
-	private HttpEntity<Object> getHttpEntity(Object body) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		return new HttpEntity<Object>(body, headers);
+
+	/**
+	 * Test method for {@link com.cognizant.outreach.microservices.perfdata.controller.PerformanceMetricsController#getEncouragingPerformanceMetrics(com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics)}.
+	 */
+	@Test
+	public void testGetEncouragingPerformanceMetrics() {
+		SearchPerformanceMetrics searchPerformanceMetrics = new SearchPerformanceMetrics();
+		searchPerformanceMetrics.setSchoolId(42l);
+		searchPerformanceMetrics.setClassName("I");
+		searchPerformanceMetrics.setClassId(37l);
+		searchPerformanceMetrics.setMonth1(1);
+		searchPerformanceMetrics.setMonth1(2);
+				
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<ApiResponse> response = template.postForEntity("/perfmetrics/encouraging", searchPerformanceMetrics, ApiResponse.class);
+		Assert.assertNotNull("Encouraging metrics data:", response.getBody());
 	}
+
+	/**
+	 * Test method for {@link com.cognizant.outreach.microservices.perfdata.controller.PerformanceMetricsController#getSchoolByMonthMetrics()}.
+	 */
+	@Test
+	public void testGetSchoolByMonthMetrics() {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<ApiResponse> response = template.getForEntity("/dashboard/schoolbymonth", ApiResponse.class);
+		Assert.assertNotNull("Number of schools using Greenstar application per month metrics data:", response.getBody());
+	}
+
+	/**
+	 * Test method for {@link com.cognizant.outreach.microservices.perfdata.controller.PerformanceMetricsController#getTotalNoOfSchools()}.
+	 */
+	@Test
+	public void testGetTotalNoOfSchools() {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<ApiResponse> response = template.getForEntity("/dashboard/totalschools", ApiResponse.class);
+		Assert.assertNotNull("Number of schools using Greenstar application per month metrics data:", response.getBody());
+	}
+
+	/**
+	 * Test method for {@link com.cognizant.outreach.microservices.perfdata.controller.PerformanceMetricsController#getTopPerformingSchools()}.
+	 */
+	@Test
+	public void testGetTopPerformingSchools() {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<ApiResponse> response = template.getForEntity("/dashboard/topschools", ApiResponse.class);
+		Assert.assertNotNull("Top schools in Greenstar application:", response.getBody());
+	}
+
+	/**
+	 * Test method for {@link com.cognizant.outreach.microservices.perfdata.controller.PerformanceMetricsController#getTopPerformingVolunteers()}.
+	 */
+	@Test
+	public void testGetTopPerformingVolunteers() {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<ApiResponse> response = template.getForEntity("/dashboard/topvolunteers", ApiResponse.class);
+		Assert.assertNotNull("Top volunteers contributing to Greenstar application:", response.getBody());
+	}
+
 	
 }
 

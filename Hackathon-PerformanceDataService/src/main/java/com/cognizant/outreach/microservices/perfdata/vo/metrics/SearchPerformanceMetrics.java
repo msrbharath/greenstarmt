@@ -1,7 +1,10 @@
 package com.cognizant.outreach.microservices.perfdata.vo.metrics;
 
+/**
+ * @author Bharath
+ *
+ */
 public class SearchPerformanceMetrics {
-
 
 	private Long schoolId;
 	private String schoolName;
@@ -9,6 +12,7 @@ public class SearchPerformanceMetrics {
 	private String className;
 	private String sectionName;
 	private Integer month;
+	private Integer month1;
 	private Integer month2;
 	private String week;
 	private String labelDateRange;
@@ -61,6 +65,14 @@ public class SearchPerformanceMetrics {
 		this.month = month;
 	}
 
+	public Integer getMonth1() {
+		return month1;
+	}
+
+	public void setMonth1(Integer month1) {
+		this.month1 = month1;
+	}
+
 	public Integer getMonth2() {
 		return month2;
 	}
@@ -84,7 +96,5 @@ public class SearchPerformanceMetrics {
 	public void setLabelDateRange(String labelDateRange) {
 		this.labelDateRange = labelDateRange;
 	}
-
-
 
 }
