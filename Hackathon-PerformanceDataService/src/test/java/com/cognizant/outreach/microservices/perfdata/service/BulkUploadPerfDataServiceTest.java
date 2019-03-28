@@ -143,11 +143,11 @@ public class BulkUploadPerfDataServiceTest {
 	    		
 		when(templateValidator.validateTemplateSrchParam(Mockito.any(Workbook.class))).thenReturn(validationForSrchParmTemplate(workbook));
 		when(excelTemplateReadHelper.getSearchParamFromTemplate(Mockito.any(Workbook.class))).thenReturn(templateReadHelper.getSearchParamFromTemplate(workbook));
-		when(performanceDataHelper.getMonthLevelWorkingDays(1l, DateUtil.getCurrentYear(), 2)).thenReturn(getAllDatesForMonth());
+		when(performanceDataHelper.getMonthLevelWorkingDays(Mockito.any(Long.class), Mockito.any(Integer.class), Mockito.any(Integer.class))).thenReturn(getAllDatesForMonth());
 		when(performanceDataDAO.isExistOfMeasurableParamObjectBySearchParam(Mockito.any(SearchPerformanceData.class))).thenReturn(isMeasurableAlreadyExist());
 		when(performanceDataDAO.listOfStudentDetailBySearchParam(Mockito.any(SearchPerformanceData.class))).thenReturn(getStudentData());
 		when(performanceDataHelper.getStudentRollIds(Mockito.any(List.class))).thenReturn(getStudentRollIds());
-		when(performanceDataDAO.listOfMeasurableParamBySchoolId(1L)).thenReturn(getMeasurableParams());
+		when(performanceDataDAO.listOfMeasurableParamBySchoolId(Mockito.any(Long.class))).thenReturn(getMeasurableParams());
 		when(performanceDataHelper.getPerformanceParamMap(Mockito.any(List.class))).thenReturn(getPerformanceParamMap());
 		when(templateValidator.validateTemplateFile(Mockito.any(Workbook.class), Mockito.any(List.class), Mockito.any(Map.class), Mockito.any(List.class))).thenReturn(validationTemplateFile(workbook));
 		when(performanceDataHelper.buildCreatePerformanceRow(Mockito.any(SearchPerformanceData.class), Mockito.any(List.class), Mockito.any(List.class), Mockito.any(List.class))).thenReturn(buildCreatePerformanceRow());

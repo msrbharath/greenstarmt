@@ -84,9 +84,9 @@ public interface PerformanceDataRepository extends CrudRepository<MeasurablePara
 
 	@Query( "select SUM(md.measurableParamValue), md.studentSchoolAssoc.teamName"
 			+ " FROM MeasurableParamData md WHERE md.studentSchoolAssoc.clazz.school.id=:SCHOOL_ID AND"
-			+ " md.studentSchoolAssoc.clazz.className=:CLASS_NAME AND"
+			+ " md.studentSchoolAssoc.clazz.id=:CLASS_ID AND"
 			+ " md.measurableParam.id=:MEASURABLE_PARAM_ID  GROUP BY md.studentSchoolAssoc.teamName ORDER BY md.studentSchoolAssoc.teamName asc")
-	public List<Object[]> listOfMeasurableParamDataByTeam(@Param("SCHOOL_ID") long schoolId, @Param("CLASS_NAME") String className,
+	public List<Object[]> listOfMeasurableParamDataByTeam(@Param("SCHOOL_ID") long schoolId, @Param("CLASS_ID") long classId,
 			@Param("MEASURABLE_PARAM_ID") long measurableParamId);
 
 	@Query( "select (SUM(md.measurableParamValue)/COUNT(md.measurableParamValue))*100, md.studentSchoolAssoc.clazz.className, md.studentSchoolAssoc.clazz.section"

@@ -1,6 +1,8 @@
 package com.cognizant.outreach.microservices.perfdata.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -10,15 +12,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.cognizant.outreach.entity.MeasurableParam;
 import com.cognizant.outreach.microservices.perfdata.dao.PerformanceDataDAOImpl;
 import com.cognizant.outreach.microservices.perfdata.repository.PerformanceDataRepository;
 import com.cognizant.outreach.microservices.perfdata.repository.SchoolRepository;
+import com.cognizant.outreach.microservices.perfdata.vo.metrics.ClasswiseMetricsVO;
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.DashboardSingleVO;
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.EncouragingMetricsVO;
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics;
+import com.cognizant.outreach.microservices.perfdata.vo.metrics.TeamwiseMetricsVO;
 
 public class PerformanceMetricsServiceTest {
 
@@ -39,50 +44,69 @@ public class PerformanceMetricsServiceTest {
 		MockitoAnnotations.initMocks(this);
 	}
 
-	/**
-	 * Test method for
-	 * {@link com.cognizant.outreach.microservices.perfdata.service.PerformanceMetricsService#getEncouragingPerformanceMetrics(com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics)}.
-	 */
 	@Test
-	public void testGetEncouragingPerformanceMetrics() {
+	public void testGetTotalNoOfSchool() {
 		when(schoolRepository.count()).thenReturn(10L);
 		assertEquals(performanceMetricsService.getTotalNoOfSchools(), Long.valueOf(10));
-		// fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for
-	 * {@link com.cognizant.outreach.microservices.perfdata.service.PerformanceMetricsService#getClasswisePerformanceMetrics(com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics)}.
+	 * Method to test the encouraging performance metric data
 	 */
 	@Test
-	public void testGetClasswisePerformanceMetrics() {
-		when(schoolRepository.count()).thenReturn(10L);
-		assertEquals(performanceMetricsService.getTotalNoOfSchools(), Long.valueOf(10));
-		// fail("Not yet implemented"); // TODO
+	public void TestPerformanceMetrics_GetEncouraging() {
+
+		SearchPerformanceMetrics searchPerformanceMetrics = new SearchPerformanceMetrics();
+		searchPerformanceMetrics.setSchoolId(1l);
+		searchPerformanceMetrics.setClassName("I");
+		searchPerformanceMetrics.setMonth1(1);
+		searchPerformanceMetrics.setMonth2(2);
+
+		when(performanceDataRepository.listOfMeasurableParamBySchoolId(Mockito.any(Long.class))).thenReturn(getMeasurableParams());
+		when(performanceDataRepository.listOfMeasurableParamDataByMonth(Mockito.any(Long.class),Mockito.any(String.class), Mockito.any(Long.class), Mockito.any(Integer.class))).thenReturn(getMeasurableParamDataByMonth());
+		when(performanceDataRepository.listOfMeasurableParamDataByMonth(Mockito.any(Long.class),Mockito.any(String.class), Mockito.any(Long.class), Mockito.any(Integer.class))).thenReturn(getMeasurableParamDataByMonth());
+
+		List<EncouragingMetricsVO> encouragingMetricsVOs = performanceMetricsService.getEncouragingPerformanceMetrics(searchPerformanceMetrics);
+
+		assertTrue("Available Encourageing Metric Data", encouragingMetricsVOs.size() > 0);
 	}
 
 	/**
-	 * Test method for
-	 * {@link com.cognizant.outreach.microservices.perfdata.service.PerformanceMetricsService#getTeamwisePerformanceMetrics(com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics)}.
-	 *//*
-		 * @Test public void testGetTeamwisePerformanceMetrics() {
-		 * when(performanceDataRepository.listOfMeasurableParamBySchoolId(1L)).
-		 * thenReturn(getMeasurableParams());
-		 * when(performanceDataRepository.listOfMeasurableParamData).thenReturn(
-		 * getSchoolsByMonth());
-		 * 
-		 * List<EncouragingMetricsVO> encouragingMetricsVOs =
-		 * performanceMetricsService.getEncouragingPerformanceMetrics(
-		 * searchPerformanceMetrics()); }
-		 * 
-		 * private SearchPerformanceMetrics searchPerformanceMetrics() {
-		 * SearchPerformanceMetrics searchPerformanceMetrics = new
-		 * SearchPerformanceMetrics();
-		 * 
-		 * searchPerformanceMetrics.se return searchPerformanceMetrics;
-		 * 
-		 * }
-		 */
+	 * Method to test the class wise performance metric data
+	 */
+	@Test
+	public void TestPerformanceMetrics_GetClasswise() {
+
+		SearchPerformanceMetrics searchPerformanceMetrics = new SearchPerformanceMetrics();
+		searchPerformanceMetrics.setSchoolId(1l);
+		searchPerformanceMetrics.setClassName("I");
+
+		when(performanceDataRepository.listOfMeasurableParamBySchoolId(Mockito.any(Long.class))).thenReturn(getMeasurableParams());
+		when(performanceDataRepository.listOfMeasurableParamDataBySection(Mockito.any(Long.class),Mockito.any(String.class), Mockito.any(Long.class))).thenReturn(getMeasurableParamDataBySection());
+
+		ClasswiseMetricsVO classwiseMetricsVO = performanceMetricsService.getClasswisePerformanceMetrics(searchPerformanceMetrics);
+
+		assertNotNull(classwiseMetricsVO);
+	}
+
+	/**
+	 * Method to test the team wise performance metric data
+	 */
+	@Test
+	public void TestPerformanceMetrics_GetTeamwise() {
+
+		SearchPerformanceMetrics searchPerformanceMetrics = new SearchPerformanceMetrics();
+		searchPerformanceMetrics.setSchoolId(1l);
+		searchPerformanceMetrics.setClassId(1L);
+		searchPerformanceMetrics.setClassName("I");
+
+		when(performanceDataRepository.listOfMeasurableParamBySchoolId(Mockito.any(Long.class))).thenReturn(getMeasurableParams());
+		when(performanceDataRepository.listOfMeasurableParamDataByTeam(Mockito.any(Long.class),Mockito.any(Long.class), Mockito.any(Long.class))).thenReturn(getMeasurableParamDataByTeam());
+
+		TeamwiseMetricsVO teamwiseMetricsVO = performanceMetricsService.getTeamwisePerformanceMetrics(searchPerformanceMetrics);
+
+		assertNotNull(teamwiseMetricsVO);
+	}
 
 	/**
 	 * Test method for
@@ -116,35 +140,6 @@ public class PerformanceMetricsServiceTest {
 		assertEquals(schoolsByMonth.get(10).getValue(), Integer.valueOf(78));
 		assertEquals(schoolsByMonth.get(11).getName(), "December");
 		assertEquals(schoolsByMonth.get(11).getValue(), Integer.valueOf(79));
-	}
-
-	private List<Object[]> getSchoolsByMonth() {
-		List<Object[]> dbValues = new ArrayList<>();
-		Object[] value0 = { 38, "1" };
-		dbValues.add(value0);
-		Object[] value1 = { 42, "2" };
-		dbValues.add(value1);
-		Object[] value2 = { 56, "3" };
-		dbValues.add(value2);
-		Object[] value3 = { 40, "4" };
-		dbValues.add(value3);
-		Object[] value4 = { 60, "5" };
-		dbValues.add(value4);
-		Object[] value5 = { 70, "6" };
-		dbValues.add(value5);
-		Object[] value6 = { 30, "7" };
-		dbValues.add(value6);
-		Object[] value7 = { 72, "8" };
-		dbValues.add(value7);
-		Object[] value8 = { 69, "9" };
-		dbValues.add(value8);
-		Object[] value9 = { 77, "10" };
-		dbValues.add(value9);
-		Object[] value10 = { 78, "11" };
-		dbValues.add(value10);
-		Object[] value11 = { 79, "12" };
-		dbValues.add(value11);
-		return dbValues;
 	}
 
 	/**
@@ -192,7 +187,36 @@ public class PerformanceMetricsServiceTest {
 		assertEquals(dashboardTopVolunteersVOs.get(2).getName(), "Panneer");
 		assertEquals(dashboardTopVolunteersVOs.get(2).getValue(), Integer.valueOf(55));
 	}
-
+	
+	private List<Object[]> getSchoolsByMonth() {
+		List<Object[]> dbValues = new ArrayList<>();
+		Object[] value0 = { 38, "1" };
+		dbValues.add(value0);
+		Object[] value1 = { 42, "2" };
+		dbValues.add(value1);
+		Object[] value2 = { 56, "3" };
+		dbValues.add(value2);
+		Object[] value3 = { 40, "4" };
+		dbValues.add(value3);
+		Object[] value4 = { 60, "5" };
+		dbValues.add(value4);
+		Object[] value5 = { 70, "6" };
+		dbValues.add(value5);
+		Object[] value6 = { 30, "7" };
+		dbValues.add(value6);
+		Object[] value7 = { 72, "8" };
+		dbValues.add(value7);
+		Object[] value8 = { 69, "9" };
+		dbValues.add(value8);
+		Object[] value9 = { 77, "10" };
+		dbValues.add(value9);
+		Object[] value10 = { 78, "11" };
+		dbValues.add(value10);
+		Object[] value11 = { 79, "12" };
+		dbValues.add(value11);
+		return dbValues;
+	}
+	
 	private List<Object[]> topPerformingVolunteers() {
 		List<Object[]> dbValues = new ArrayList<>();
 		Object[] value0 = { 100, "Bharath" };
@@ -221,7 +245,6 @@ public class PerformanceMetricsServiceTest {
 
 	private List<MeasurableParam> getMeasurableParams() {
 		List<MeasurableParam> measurableParams = new ArrayList<MeasurableParam>();
-
 		measurableParams.add(getMeasurableParameter(1l, "Attendance"));
 		measurableParams.add(getMeasurableParameter(2l, "HomeWork"));
 		measurableParams.add(getMeasurableParameter(3l, "Discipline"));
@@ -230,13 +253,54 @@ public class PerformanceMetricsServiceTest {
 	}
 
 	private MeasurableParam getMeasurableParameter(long id, String paramTitle) {
-
 		MeasurableParam measurableParam = new MeasurableParam();
 		measurableParam.setId(id);
 		measurableParam.setParameterTitle(paramTitle);
 		measurableParam.setParameterDesc(paramTitle);
 
 		return measurableParam;
+	}
+
+	private List<Object[]> getMeasurableParamDataBySection() {
+		List<Object[]> measurableParamDataList = new ArrayList<>();
+
+		Object[] data1 = new Object[] { 50l, "I", "A" };
+		Object[] data2 = new Object[] { 100l, "I", "B" };
+		Object[] data3 = new Object[] { 150l, "II", "A" };
+
+		measurableParamDataList.add(data1);
+		measurableParamDataList.add(data2);
+		measurableParamDataList.add(data3);
+
+		return measurableParamDataList;
+	}
+
+	private List<Object[]> getMeasurableParamDataByTeam() {
+		List<Object[]> measurableParamDataList = new ArrayList<>();
+
+		Object[] data1 = new Object[] { 50l, "Green" };
+		Object[] data2 = new Object[] { 100l, "Red" };
+		Object[] data3 = new Object[] { 150l, "Yellow" };
+
+		measurableParamDataList.add(data1);
+		measurableParamDataList.add(data2);
+		measurableParamDataList.add(data3);
+
+		return measurableParamDataList;
+	}
+
+	private List<Object[]> getMeasurableParamDataByMonth() {
+		List<Object[]> measurableParamDataList = new ArrayList<>();
+
+		Object[] data1 = new Object[] { 50l, "I", "A" };
+		Object[] data2 = new Object[] { 100l, "I", "B" };
+		Object[] data3 = new Object[] { 150l, "II", "A" };
+
+		measurableParamDataList.add(data1);
+		measurableParamDataList.add(data2);
+		measurableParamDataList.add(data3);
+
+		return measurableParamDataList;
 	}
 
 }

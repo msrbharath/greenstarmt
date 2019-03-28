@@ -6,6 +6,8 @@ package com.cognizant.outreach.microservices.perfdata.service;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cognizant.outreach.entity.MeasurableParam;
+import com.cognizant.outreach.microservices.perfdata.constants.PerfDataConstants;
+import com.cognizant.outreach.microservices.perfdata.constants.StarColorCodes;
 import com.cognizant.outreach.microservices.perfdata.repository.PerformanceDataRepository;
 import com.cognizant.outreach.microservices.perfdata.repository.SchoolRepository;
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.AverageRowVO;
@@ -28,6 +32,8 @@ import com.cognizant.outreach.microservices.perfdata.vo.metrics.EncouragingMetri
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics;
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.SectionDataVO;
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.TeamwiseMetricsVO;
+import com.cognizant.outreach.microservices.perfdata.vo.star.PerformanceStarSearchDataVO;
+import com.cognizant.outreach.microservices.perfdata.vo.star.PerformanceStarVO;
 
 @Service
 public class PerformanceMetricsServiceImpl implements PerformanceMetricsService {
@@ -36,6 +42,9 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 
 	@Autowired
 	PerformanceDataRepository performanceDataRepository;
+
+	@Autowired
+	PerformanceStarService performanceStarService;
 
 	@Autowired
 	SchoolRepository schoolRepository;
@@ -77,12 +86,13 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 			}
 			averageRowVO.setMonth1Average(averageRowVO.getMonth1Average() / sectionwiseMap.size());
 			averageRowVO.setMonth2Average(averageRowVO.getMonth2Average() / sectionwiseMap.size());
-			averageRowVO.setChangeinAverage(averageRowVO.getMonth1Average() - averageRowVO.getMonth2Average());
+			averageRowVO.setChangeinAverage(averageRowVO.getMonth2Average() - averageRowVO.getMonth1Average());
 			encouragingMetricsVO.setAverageRow(averageRowVO);
 			encouragingMetricsVO.setClassName(searchPerformanceMetrics.getClassName());
 			encouragingMetricsVO.setSectionData(sectionDatas);
 			encouragingMetricsVOs.add(encouragingMetricsVO);
 		}
+		logger.debug("Completed service for getting Encouraging performance metrics");
 		return encouragingMetricsVOs;
 	}
 
@@ -104,7 +114,7 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 				sectionData.setMonth2percentage((Long) sectionRow[0]);
 				encouragingMetricsVO.setMonth2(monthId);
 				sectionData
-						.setIncreasePercentage(sectionData.getMonth1percentage() - sectionData.getMonth2percentage());
+						.setIncreasePercentage(sectionData.getMonth2percentage() - sectionData.getMonth1percentage());
 				break;
 
 			default:
@@ -143,6 +153,7 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 			classwiseSectionDatas.add(classwiseSectionData.getValue());
 		}
 		classwiseMetricsVO.setSectionData(classwiseSectionDatas);
+		logger.debug("Completed service for getting Classwise performance metrics");
 		return classwiseMetricsVO;
 	}
 
@@ -160,7 +171,7 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 		for (MeasurableParam param : measurableParam) {
 			generateParamDataTeamMap(
 					performanceDataRepository.listOfMeasurableParamDataByTeam(searchPerformanceMetrics.getSchoolId(),
-							searchPerformanceMetrics.getClassName(), param.getId()),
+							searchPerformanceMetrics.getClassId(), param.getId()),
 					param, sectionData, classwiseMap, ++i, teamwiseMetricsVO);
 		}
 		teamwiseMetricsVO.setClassName(searchPerformanceMetrics.getClassName());
@@ -172,7 +183,34 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 			classwiseSectionDatas.add(classwiseSectionData.getValue());
 		}
 		teamwiseMetricsVO.setSectionData(classwiseSectionDatas);
+		calculateBonusPoints(teamwiseMetricsVO, searchPerformanceMetrics);
+		logger.debug("Completed service for getting Teamwise performance metrics");
 		return teamwiseMetricsVO;
+
+	}
+
+	private void calculateBonusPoints(TeamwiseMetricsVO teamwiseMetricsVO,
+			SearchPerformanceMetrics searchPerformanceMetrics) {
+		PerformanceStarSearchDataVO performanceStarSearchDataVO = new PerformanceStarSearchDataVO();
+		List<String> colourCodeList = null;
+		PerformanceStarVO performanceStarVO = new PerformanceStarVO();
+		performanceStarSearchDataVO.setCalcType(PerfDataConstants.TEAM);
+		performanceStarSearchDataVO.setClassId(searchPerformanceMetrics.getClassId());
+		performanceStarSearchDataVO.setSchoolId(searchPerformanceMetrics.getSchoolId());
+		for (ClassTeamwiseSectionData classTeamwiseSectionData : teamwiseMetricsVO.getSectionData()) {
+			performanceStarSearchDataVO.setTeamName(classTeamwiseSectionData.getTeamName());
+			for (int i = 1; i <= 12; i++) {
+				performanceStarSearchDataVO.setMonth(i);
+				performanceStarVO = performanceStarService.getStarData(performanceStarSearchDataVO).get();
+				colourCodeList = new ArrayList<String>(Arrays.asList(performanceStarVO.getParamOneMonthColorCodes()));
+				colourCodeList.addAll(Arrays.asList(performanceStarVO.getParamTwoMonthColorCodes()));
+				colourCodeList.addAll(Arrays.asList(performanceStarVO.getParamThreeMonthColorCodes()));
+				classTeamwiseSectionData.setTotal(classTeamwiseSectionData.getTotal()
+						+ Collections.frequency(colourCodeList, StarColorCodes.COMPLAINT.getColorCode()) * 5
+						+ Collections.frequency(colourCodeList, StarColorCodes.EQUAL_ABOVE_75.getColorCode()) * 3
+						+ Collections.frequency(colourCodeList, StarColorCodes.BELOW_75.getColorCode()));
+			}
+		}
 
 	}
 
@@ -271,7 +309,7 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 			default:
 				break;
 			}
-			metricsVO.setTotalTitle("Total");
+			metricsVO.setTotalTitle("Total (including bonus points)");
 			if (sectionData.getTotal() == null) {
 				sectionData.setTotal(0L);
 			}
@@ -297,6 +335,7 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 			dashboardSingleVO.setValue(Integer.valueOf(String.valueOf(schoolByMonth[0])));
 			dashboardSingleVOs.add(dashboardSingleVO);
 		}
+		logger.debug("Completed service for getting Number of Schools using Greenstar application per month");
 		return dashboardSingleVOs;
 	}
 
@@ -318,6 +357,7 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 			dashboardSingleVO.setValue(Integer.valueOf(String.valueOf(topSchoolsByMonth[0])));
 			dashboardTopSchoolsVOs.add(dashboardSingleVO);
 		}
+		logger.debug("Completed service for getting Top performing Schools using Greenstar application");
 		return dashboardTopSchoolsVOs;
 	}
 
@@ -333,6 +373,7 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 			dashboardSingleVO.setValue(Integer.valueOf(String.valueOf(topVolunteers[0])));
 			dashboardTopVolunteersVOs.add(dashboardSingleVO);
 		}
+		logger.debug("Completed service for getting Top performing volunteers using Greenstar application");
 		return dashboardTopVolunteersVOs;
 	}
 }
