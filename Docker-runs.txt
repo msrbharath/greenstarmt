@@ -1,0 +1,161 @@
+#############Dicovery###################
+dockerx build --tag=greenstarapp-discovery-service:latest --rm=true .
+dockerx run --name=greenstarapp-discovery-service -d --publish=8761:8761 --network=greenapp-network greenstarapp-discovery-service:latest 
+
+-e hostName=$HOSTNAME
+dockerx stop greenstarapp-discovery-service
+dockerx rm greenstarapp-discovery-service
+
+#########DB###########################
+dockerx run --name greenstardb -d -e MYSQL_ROOT_PASSWORD=passwordroot -e MYSQL_DATABASE=greenstar -e MYSQL_USER=dbuser -e MYSQL_PASSWORD=dbuser123 --network=greenapp-network -p 3333:3333 mysql:latest
+
+dockerx stop greenstardb
+dockerx rm greenstardb
+greenstardb
+
+################School#########################
+dockerx build --tag=greenstarapp-school-service:latest --rm=true .
+dockerx run --name=greenstarapp-school-service-docker -d --publish=2620:2620 -e eureka.client.serviceUrl.defaultZone="http://172.18.2.50:8761/eureka/" -e spring.datasource.url="jdbc:mysql://greenstardb:3306/greenstar?useSSL=false" --link greenstardb:mysql greenstarapp-school-service:latest
+dockerx stop greenstarapp-school-service-docker
+dockerx rm greenstarapp-school-service-docker
+
+####################Security##########################
+
+dockerx build --tag=greenstarapp-security-service:latest --rm=true .
+
+dockerx run --name=greenstarapp-security-service --publish=2610:2610 -e eureka.client.serviceUrl.defaultZone="http://greenstarapp-discovery-service:8761/eureka/" -e spring.datasource.url="jdbc:mysql://greenstardb:3306/greenstar" --link greenstardb:mysql --network=greenapp-network greenstarapp-security-service:latest
+
+dockerx stop greenstarapp-security-service
+dockerx rm greenstarapp-security-service
+
+#########################Perfdata#######################
+dockerx build --tag=greenstarapp-perfdata-service:latest --rm=true .
+
+dockerx run --name=greenstarapp-perfdata-service-docker -d --publish=2640:2640 -e eureka.client.serviceUrl.defaultZone="http://172.18.2.50:8761/eureka/" -e spring.datasource.url="jdbc:mysql://greenstardb:3306/greenstar?useSSL=false" --link greenstardb:mysql greenstarapp-perfdata-service:latest
+
+dockerx stop greenstarapp-perfdata-service
+dockerx rm greenstarapp-perfdata-service
+
+###########################Gateway#####################
+
+dockerx build --tag=greenstarapp-gateway-service:latest --rm=true .
+
+dockerx run --name=greenstarapp-gateway-service --publish=8765:8765 -e eureka.client.serviceUrl.defaultZone="http://greenstarapp-discovery-service:8761/eureka/" --network=greenapp-network greenstarapp-gateway-service:latest
+
+dockerx stop greenstarapp-gateway-service-docker
+dockerx rm greenstarapp-gateway-service-docker
+
+#############################################################
+
+
+
+
+dockerx build --tag=greenstarapp-security-service:latest --rm=true .
+
+dockerx run --name=greenstarapp-security-service-docker --publish=2610:2610 -e eureka.client.serviceUrl.defaultZone="http://172.18.2.50:8761/eureka/" greenstarapp-security-service:latest
+dockerx stop greenstarapp-security-service-docker
+dockerx rm greenstarapp-security-service-docker
+
+
+#########################testutil#######################
+dockerx build --tag=greenstarapp-testutil:latest --rm=true .
+
+dockerx run --name=greenstarapp-testutil --publish=8766:8766 -e spring.datasource.url="jdbc:mysql://greenstardb:3306/greenstar?useSSL=false" --link greenstardb:mysql  --network=greenapp-network greenstarapp-testutil:latest
+
+dockerx stop greenstarapp-perfdata-service
+dockerx rm greenstarapp-perfdata-service
+
+
+
+
+##########################mvn clean install -DskipTests###################
+
+dockerx run --name=greenstarapp-school-service-docker --publish=8765:8765 greenstarapp-school-service:latest -e  eureka.client.serviceUrl.defaultZone="http://$HOSTNAME:8761/eureka/"
+
+dockerx build --tag=greenstarapp-school-service:latest --rm=true .
+dockerx run --name=greenstarapp-school-service-docker --publish=2620:2620 greenstarapp-school-service:latest
+dockerx stop greenstarapp-school-service-docker
+dockerx rm greenstarapp-school-service-docker
+
+docker network create greenapp-network
+
+docker logs greenstarapp-gateway-service-docker --tail=1000
+
+dockerx logs greenstarapp-security-service-docker
+
+dockerx logs greenstarapp-gateway-service
+
+dockerx stop greenstarapp-security-service-docker
+dockerx rm greenstarapp-security-service-docker
+
+dockerx logs dfecd2527edb
+
+dockerx inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" greenstardb
+For UI
+=====
+dockerx build -t greenstarui:prod .
+dockerx run --name=greenstarui-docker --publish=4552:4552 greenstarui:prod
+
+dockerx stop greenstarui-docker
+dockerx rm greenstarui-docker
+
+
+Run UI (Docker)
+172.18.2.50:4552
+
+Create a docker mysql
+=====================
+dockerx run --name=greenstardbmysql --env="MYSQL_ROOT_PASSWORD=password" --publish=9411:9411 mysql
+dockerx exec -it greenstardbmysql bash
+mysql -u root -p
+CREATE USER 'dbuser'@'172.18.1.240' IDENTIFIED BY 'dbuser123';
+GRANT ALL ON *.* TO 'dbuser'@'172.18.1.240';
+
+CREATE USER 'dbuser'@'172.18.2.50' IDENTIFIED BY 'dbuser123';
+GRANT ALL ON *.* TO 'dbuser'@'172.18.2.50';
+
+CREATE USER 'dbuser'@'localhost' IDENTIFIED BY 'dbuser123';
+GRANT ALL ON *.* TO 'dbuser'@'localhost';
+
+dockerx run -p 9411:9411 --name greenstardb -e MYSQL_ROOT_PASSWORD=password -d mysql
+dockerx exec -it greenstardb bash
+
+dockerx stop greenstarapp-gateway-service
+dockerx start greenstarapp-gateway-service
+dockerx rm greenstardbmysql
+dockerx rm greenstardb
+dockerx stack deploy -c stack.yml mysql
+dockerx start greenstarapp-school-service
+
+//Name changes
+//Eureka 
+
+Working
+======
+java -jar greenstarapp-discovery-service.jar --server.port=9090
+
+--spring.datasource.url=jdbc:mysql://172.18.1.240:3306/greenstar?useSSL=false
+
+--eureka.client.serviceUrl.defaultZone=http://greenstarapp-discovery-service-docker:8761/eureka
+
+
+Identify the netwrok:
+====================
+dockerx inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" greenstardb
+
+dockerx inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" 'greenstarapp-school-service'
+
+
+dockerx inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" 'greenstarui'
+
+
+dockerx inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" "greenstarapp-perfdata-service"
+
+dockerx inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" 'greenstarapp-security-service'
+
+
+
+
+
+=====================Periyala mulukku
+dockerx run --name=greenstarapp-school-service-docker --publish=2620:2620 -e eureka.client.serviceUrl.defaultZone="http://172.18.2.50:8761/eureka/" -e spring.datasource.url="jdbc:mysql://greenstardb:3306/greenstar" --link greenstardb:mysql greenstarapp-school-service:latest
