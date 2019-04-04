@@ -19,6 +19,16 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.10.1</version>
 		</dependency>
+		<dependency> <!-- Added for at value tag for Jwt config -->
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-beans</artifactId>
+		    <version>5.0.10.RELEASE</version>
+		</dependency>
+		<dependency><!-- Added for at value getter and setter for Jwt config -->
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.16.14</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,11 +25,16 @@ import com.cognizant.outreach.microservices.perfdata.vo.metrics.DashboardSingleV
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.EncouragingMetricsVO;
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.SearchPerformanceMetrics;
 import com.cognizant.outreach.microservices.perfdata.vo.metrics.TeamwiseMetricsVO;
+import com.cognizant.outreach.microservices.perfdata.vo.star.PerformanceStarSearchDataVO;
+import com.cognizant.outreach.microservices.perfdata.vo.star.PerformanceStarVO;
 
 public class PerformanceMetricsServiceTest {
 
 	@InjectMocks
 	PerformanceMetricsService performanceMetricsService = new PerformanceMetricsServiceImpl();
+	
+	@Mock
+	PerformanceStarService performanceStarService = new PerformanceStarServiceImpl();
 
 	@Mock
 	PerformanceDataRepository performanceDataRepository;
@@ -102,7 +108,9 @@ public class PerformanceMetricsServiceTest {
 
 		when(performanceDataRepository.listOfMeasurableParamBySchoolId(Mockito.any(Long.class))).thenReturn(getMeasurableParams());
 		when(performanceDataRepository.listOfMeasurableParamDataByTeam(Mockito.any(Long.class),Mockito.any(Long.class), Mockito.any(Long.class))).thenReturn(getMeasurableParamDataByTeam());
-
+		
+		when(performanceStarService.getStarData(Mockito.any(PerformanceStarSearchDataVO.class))).thenReturn(getStarData());
+		
 		TeamwiseMetricsVO teamwiseMetricsVO = performanceMetricsService.getTeamwisePerformanceMetrics(searchPerformanceMetrics);
 
 		assertNotNull(teamwiseMetricsVO);
@@ -302,5 +310,22 @@ public class PerformanceMetricsServiceTest {
 
 		return measurableParamDataList;
 	}
+	
+	private Optional<PerformanceStarVO> getStarData() {
+		
+		String[] colorCodes = {"#7CFC00","#7beded","#FFFF00","#7beded","#FFFFFF","#7beded","#FF0000","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF","#7beded","#7beded","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF","#7beded","#7beded","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF","#7beded","#7beded","#FFFFFF","#FFFFFF","#FFFFFF","#FFFFFF"};
+		
+		PerformanceStarVO  performanceStarVO = new PerformanceStarVO();
+		performanceStarVO.setParamOne("Attendance");
+		performanceStarVO.setParamOneMonthColorCodes(colorCodes);
+		
+		performanceStarVO.setParamTwo("HomeWork");
+		performanceStarVO.setParamTwoMonthColorCodes(colorCodes);
 
+		performanceStarVO.setParamThree("Discipline");
+		performanceStarVO.setParamThreeMonthColorCodes(colorCodes);	
+		
+		return Optional.of(performanceStarVO);
+	}
+	
 }

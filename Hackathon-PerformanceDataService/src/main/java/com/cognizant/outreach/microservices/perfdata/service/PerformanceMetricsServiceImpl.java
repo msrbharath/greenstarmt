@@ -169,6 +169,7 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 		List<MeasurableParam> measurableParam = performanceDataRepository
 				.listOfMeasurableParamBySchoolId(searchPerformanceMetrics.getSchoolId());
 		for (MeasurableParam param : measurableParam) {
+			// TODO: This method call's total calculation not required. calculation is done in calculateBonusPoints() method
 			generateParamDataTeamMap(
 					performanceDataRepository.listOfMeasurableParamDataByTeam(searchPerformanceMetrics.getSchoolId(),
 							searchPerformanceMetrics.getClassId(), param.getId()),
@@ -178,7 +179,7 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 		for (Entry<String, ClassTeamwiseSectionData> classwiseSectionData : classwiseMap.entrySet()) {
 			classwiseSectionData.getValue()
 					.setTotal(classwiseSectionData.getValue().getParam1Total()
-							+ classwiseSectionData.getValue().getParam3Total()
+							+ classwiseSectionData.getValue().getParam2Total()
 							+ classwiseSectionData.getValue().getParam3Total());
 			classwiseSectionDatas.add(classwiseSectionData.getValue());
 		}
@@ -193,11 +194,17 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 			SearchPerformanceMetrics searchPerformanceMetrics) {
 		PerformanceStarSearchDataVO performanceStarSearchDataVO = new PerformanceStarSearchDataVO();
 		List<String> colourCodeList = null;
+
 		PerformanceStarVO performanceStarVO = new PerformanceStarVO();
 		performanceStarSearchDataVO.setCalcType(PerfDataConstants.TEAM);
 		performanceStarSearchDataVO.setClassId(searchPerformanceMetrics.getClassId());
 		performanceStarSearchDataVO.setSchoolId(searchPerformanceMetrics.getSchoolId());
 		for (ClassTeamwiseSectionData classTeamwiseSectionData : teamwiseMetricsVO.getSectionData()) {
+			classTeamwiseSectionData.setTotal(0l);
+			classTeamwiseSectionData.setParam1Total(0l);
+			classTeamwiseSectionData.setParam2Total(0l);
+			classTeamwiseSectionData.setParam3Total(0l);
+			
 			performanceStarSearchDataVO.setTeamName(classTeamwiseSectionData.getTeamName());
 			for (int i = 1; i <= 12; i++) {
 				performanceStarSearchDataVO.setMonth(i);
@@ -205,15 +212,36 @@ public class PerformanceMetricsServiceImpl implements PerformanceMetricsService 
 				colourCodeList = new ArrayList<String>(Arrays.asList(performanceStarVO.getParamOneMonthColorCodes()));
 				colourCodeList.addAll(Arrays.asList(performanceStarVO.getParamTwoMonthColorCodes()));
 				colourCodeList.addAll(Arrays.asList(performanceStarVO.getParamThreeMonthColorCodes()));
-				classTeamwiseSectionData.setTotal(classTeamwiseSectionData.getTotal()
-						+ Collections.frequency(colourCodeList, StarColorCodes.COMPLAINT.getColorCode()) * 5
-						+ Collections.frequency(colourCodeList, StarColorCodes.EQUAL_ABOVE_75.getColorCode()) * 3
-						+ Collections.frequency(colourCodeList, StarColorCodes.BELOW_75.getColorCode()));
-			}
+				
+				for (int j = 0; j < performanceStarVO.getParamOneMonthColorCodes().length; j++) {
+					if (performanceStarVO.getParamOneMonthColorCodes()[j]
+							.equalsIgnoreCase(StarColorCodes.COMPLAINT.getColorCode())
+							&& performanceStarVO.getParamTwoMonthColorCodes()[j]
+									.equalsIgnoreCase(StarColorCodes.COMPLAINT.getColorCode())
+							&& performanceStarVO.getParamThreeMonthColorCodes()[j]
+									.equalsIgnoreCase(StarColorCodes.COMPLAINT.getColorCode())) {
+						classTeamwiseSectionData.setTotal(classTeamwiseSectionData.getTotal() + 5);
+					}
+				}
+				
+				classTeamwiseSectionData.setParam1Total(classTeamwiseSectionData.getParam1Total() + getTotal(Arrays.asList(performanceStarVO.getParamOneMonthColorCodes())));
+				classTeamwiseSectionData.setParam2Total(classTeamwiseSectionData.getParam2Total() + getTotal(Arrays.asList(performanceStarVO.getParamTwoMonthColorCodes())));
+				classTeamwiseSectionData.setParam3Total(classTeamwiseSectionData.getParam3Total() + getTotal(Arrays.asList(performanceStarVO.getParamThreeMonthColorCodes())));
+				
+				classTeamwiseSectionData.setTotal(classTeamwiseSectionData.getTotal() + getTotal(colourCodeList));
+			}		
+			
 		}
 
 	}
-
+	
+	private long getTotal(List<String> colourCodeList) {
+		
+		return Collections.frequency(colourCodeList, StarColorCodes.COMPLAINT.getColorCode()) * 5
+				+ Collections.frequency(colourCodeList, StarColorCodes.EQUAL_ABOVE_75.getColorCode()) * 3
+				+ Collections.frequency(colourCodeList, StarColorCodes.BELOW_75.getColorCode());
+	}
+	
 	/**
 	 * Method to convert the param data to key value map
 	 * 
