@@ -1,0 +1,49 @@
+<div class="modal-header">
+    <span>Student Bulk Upload</span>
+    <button class="close" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body" [nbSpinner]="isSpinner" nbSpinnerSize="xxlarge" nbSpinnerStatus="success">
+    <div class="row" *ngIf='isShowSuccessMsg'>
+        <div class="col-sm-12">
+            <p class="text-success">
+                <strong>Students Bulk Upload successfull!</strong>
+            </p>
+        </div>
+    </div>
+    <div class="row" *ngIf='isShowErrorMsg'>
+        <div class="col-sm-12">
+            <p class="text-danger">
+                <strong>{{errorMsg}}</strong>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="file" id="uploadFile" name="uploadFile" (change)="handleFileInput($event.target.files)" class="form-control"
+                        placeholder="Upload Student Data" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-6 pt-1">
+            <button type="button" class="btn btn-outline-info" (click)="downloadBulkUploadTemplate()">Click to download template</button>
+        </div>
+    </div>
+    <div class="row pt-3">
+        <div class="col-sm-12">
+            <h5>Note:</h5>
+            <p> Please don't change file name, sheet name, header name in the excel template. </p>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-md btn-primary" [disabled]="isDisableButton" (click)="uploadStudentBulkData()">Upload</button>
+</div>

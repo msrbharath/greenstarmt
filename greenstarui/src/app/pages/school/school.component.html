@@ -1,0 +1,119 @@
+<div class="modal-header">
+    <span id="schoolTitle">{{ title }}</span>
+    <button class="close" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <nb-tabset (changeTab)="onChangeTab($event)">
+        <nb-tab tabTitle="School" tabIcon="nb-home" responsive>
+            <form class="form-horizontal">
+                <div class="row pt-5">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label for="schoolName" class="col-sm-3 col-form-label required">Name</label>
+                            <div class="input-group col-sm-7">
+                                <input type="text" id="schoolName" name="schoolName" maxlength="90"
+                                    [(ngModel)]="schoolDetail.schoolName" class="form-control" placeholder="School Name"
+                                    [disabled]="this.action == 'view'" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="address" class="col-sm-3 col-form-label  required">Address</label>
+                            <div class="input-group col-sm-7">
+                                <textarea type="text" id="address" name="address" row="5" maxlength="500"
+                                    [(ngModel)]="schoolDetail.address" class="form-control" placeholder="Address"
+                                    [disabled]="this.action == 'view'">
+                                    </textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="city" class="col-sm-3 col-form-label  required">City</label>
+                            <div class="input-group col-sm-7">
+                                <input type="text" id="city" name="city" maxlength="45"
+                                    [(ngModel)]="schoolDetail.cityName" class="form-control"
+                                    [disabled]="this.action == 'view'" placeholder="City">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="address" class="col-sm-3 col-form-label  required">State</label>
+                            <div class="input-group col-sm-7">
+                                <select id="state" name="state" class="form-control form-control-sm"
+                                    [disabled]="this.action == 'view'" [(ngModel)]="schoolDetail.state"
+                                    (change)="onStateChange()">
+                                    <option value="--Select State--">--Select State--</option>
+                                    <option *ngFor="let state of stateList" value={{state.stateName}}>
+                                        {{state.stateName}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="district" class="col-sm-3 col-form-label  required">District</label>
+                            <div class="input-group col-sm-7">
+                                <select id="district" name="district" class="form-control form-control-sm"
+                                    [disabled]="this.action == 'view'" [(ngModel)]="schoolDetail.district">
+                                    <option value="--Select District--">--Select District--</option>
+                                    <option *ngFor="let district of districtList" value={{district}}>
+                                        {{district}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </nb-tab>
+
+        <nb-tab tabTitle="Class" class="pt-3" tabIcon="nb-person" responsive>
+            <span class="pt-1 pb-1" *ngIf="this.action != 'view'">Note: To create class without section provide space
+                for section</span>
+            <ng2-smart-table [settings]="classTableSetting" [source]="classDetail" (createConfirm)="onClassAdd($event)"
+                (editConfirm)="onClassEdit($event)" (deleteConfirm)="onClassDeleteConfirm($event)">
+            </ng2-smart-table>
+        </nb-tab>
+
+        <nb-tab tabTitle="Performance Parameter" class="pt-3" tabIcon="nb-bar-chart" responsive>
+            <ng2-smart-table [settings]="perfParamDynamicSetting" [source]="perfParamDynamicDetail"
+                (editConfirm)="onParameterEdit($event)">
+            </ng2-smart-table>
+        </nb-tab>
+
+        <nb-tab tabTitle="Holidays" class="pt-3" tabIcon="nb-volume-high" responsive>
+            <nb-accordion>
+                <nb-accordion-item>
+                    <nb-accordion-item-header>
+                        Holidays
+                    </nb-accordion-item-header>
+                    <nb-accordion-item-body>
+                        <span class="pt-1 pb-1" *ngIf="this.action != 'view'">Note: To enter holiday for single day
+                            provide same date in from and to date columns</span>
+                        <ng2-smart-table [settings]="schoolHolidaySetting" [source]="schoolHolidayDetail"
+                            (createConfirm)="onCreateForHoliday($event)" (editConfirm)="onEditForHoliday($event)"
+                            (deleteConfirm)="onDeleteForHoliday($event)">
+                        </ng2-smart-table>
+                    </nb-accordion-item-body>
+                </nb-accordion-item>
+
+                <nb-accordion-item>
+                    <nb-accordion-item-header>
+                        Weekend Working Days
+                    </nb-accordion-item-header>
+                    <nb-accordion-item-body>
+                        <ng2-smart-table [settings]="schoolWeekendWorkSetting" [source]="schoolWeekendWorkDetail"
+                            (createConfirm)="onCreateForWeekendWorking($event)"
+                            (editConfirm)="onEditForWeekendWorking($event)"
+                            (deleteConfirm)="onDeleteForWeekendWorking($event)">
+                        </ng2-smart-table>
+                    </nb-accordion-item-body>
+                </nb-accordion-item>
+            </nb-accordion>
+        </nb-tab>
+    </nb-tabset>
+</div>
+
+<div class="modal-footer" *ngIf="this.action != 'view'">
+    <button nbButton status="primary" (click)="onSubmitChanges()" class='text-right'>Submit</button>
+</div>

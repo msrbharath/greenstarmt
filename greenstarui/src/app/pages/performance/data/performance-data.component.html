@@ -1,0 +1,167 @@
+<div class="row">
+    <div class="col-md-12">
+        <nb-card>
+            <nb-card-header>
+                Performance Data
+            </nb-card-header>
+
+            <nb-card-body [nbSpinner]="isSpinner" nbSpinnerSize="xxlarge" nbSpinnerStatus="success">
+                <form [formGroup]="perfDataForm" (ngSubmit)="searchPerformanceData()">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <label for="schoolId" class="col-form-label required">School</label>
+                            <div class="input-group required">
+                                <select id="schoolId" name="schoolId" formControlName="schoolId" class="form-control form-control-sm" [ngClass]="displayFieldCss('schoolId')" (change)="loadClassDetailsBySchool()" required>
+                                    <option value=''>Select</option>
+                                    <option *ngFor="let school of schoolList" value={{school.id}}>
+                                        {{school.schoolName}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="className" class="col-form-label required">Class & Section</label>
+                            <div class="input-group">
+                                <select id="classId" name="classId" formControlName="classId" class="form-control form-control-sm" [ngClass]="displayFieldCss('classId')">
+                                    <option value=''>Select</option>
+                                    <option *ngFor="let class of classList" value={{class.id}}>
+                                        {{class.classAndSectionName}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label for="month" class="col-form-label required">Month</label>
+                            <div class="input-group">
+                                <select id="month" name="month" formControlName="month" class="form-control form-control-sm" [ngClass]="displayFieldCss('month')" (change)="populateWeekWorkingDays()" required>
+                                    <option value=''>--Select--</option>
+                                    <option value='1'>Jan</option>
+                                    <option value='2'>Feb</option>
+                                    <option value='3'>Mar</option>
+                                    <option value='4'>Apr</option>
+                                    <option value='5'>May</option>
+                                    <option value='6'>Jun</option>
+                                    <option value='7'>Jul</option>
+                                    <option value='8'>Aug</option>
+                                    <option value='9'>Sep</option>
+                                    <option value='10'>Oct</option>
+                                    <option value='11'>Nov</option>
+                                    <option value='12'>Dec</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label for="week" class="col-form-label">Week</label>
+                            <div class="input-group">
+                                <select id="week" name="week" formControlName="week" class="form-control form-control-sm" [ngClass]="displayFieldCss('week')">
+                                    <option value=''>Select</option>
+                                    <option *ngFor="let weekDay of weekDays | keyvalue" value={{weekDay.value}}>
+                                        {{weekDay.key}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pt-3">
+                        <div class="col-sm-8 text-left errormsg">
+                            <span id="errorSpanMsg" *ngIf="isSearchDataNotValid"> {{searchDataErrorMsg}} </span>
+                        </div>
+                        <div class="col-sm-2 text-right pt-2">
+                            <button class="btn btn-primary btn-sm" type="button" (click)="resetPerformanceSearch();">Reset</button>
+                        </div>
+                        <div class="col-sm-2 text-right pt-2">
+                            <button class="btn btn-primary btn-sm" type="submit">Search</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="row pt-4">
+                    <div class="col-sm-2 pt-2">
+                        <button class="btn btn-primary btn-sm" (click)="openBulkUploadMmodal();">Bulk Upload</button>
+                    </div>
+                    <div class="col-sm-3 pt-2">
+                        <button class="btn btn-primary btn-sm" (click)="downloadTemplate();">
+                            <span>Download Template</span>
+                        </button>
+                    </div>
+                    <div class="col-sm-2 pt-2">
+                        <button class="btn btn-primary btn-sm" (click)="addPerformanceData();" [disabled]="!isPerformanceAddEnabled">Add</button>
+                    </div>
+                    <div class="col-sm-2 text-right pt-2">
+                        <nb-checkbox (change)="checkAllPerformance($event.target.checked);" [disabled]="!isPerformanceChkboxEnabled">Select All</nb-checkbox>
+                    </div>
+                    <div class="col-sm-1 text-right pt-2">
+                        <button class="btn btn-primary btn-sm" [disabled]="!isPerformanceEditEnabled" (click)="editPerformanceData();">Edit</button>
+                    </div>
+                    <div class="col-sm-2 text-right pt-2">
+                        <button class="btn btn-primary btn-sm" [disabled]="!isPerformanceChkboxEnabled" (click)="submitPerformanceData();">Submit</button>
+                    </div>
+                </div>
+
+                <div class="row pt-2">
+                    <div class="col-sm-12" *ngIf='isShowPerformanceMetricTable'>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped table-bordered">
+                                <thead>
+                                    <!-- Top Header Row - Start -->
+                                    <tr>
+                                        <th rowspan="2" scope="col">Roll ID</th>
+                                        <th rowspan="2" scope="col">Student Name</th>
+                                        <ng-container *ngFor="let headerObj of performanceSource.headers">
+                                            <th [attr.colspan]="performanceSource.totalSubTitle" scope="col" class="text-center">
+                                                <label nbTooltip="{{headerObj.title}}" nbTooltipPlacement="top" nbTooltipStatus="info">{{headerObj.title}}</label> &nbsp;
+                                                <nb-checkbox [value]="headerObj.checkValue" (change)="checkPerformanceDayWise($event.target.checked, headerObj);" [disabled]="!isPerformanceChkboxEnabled"></nb-checkbox>
+                                            </th>
+                                        </ng-container>
+                                    </tr>
+                                    <!-- Top Header Row - End -->
+
+                                    <!-- Top Sub Header Row - Start -->
+                                    <tr>
+                                        <ng-container *ngFor="let headerObj of performanceSource.headers">
+                                            <ng-container *ngIf="headerObj.subTitleList.length > 0">
+                                                <th *ngFor="let subTitle of headerObj.subTitleList" class="text-center" scope="col">
+                                                    <label nbTooltip="{{subTitle.title}}" nbTooltipPlacement="top" nbTooltipStatus="info">{{subTitle.alais}}</label>
+                                                    <br/>
+                                                    <nb-checkbox [value]="subTitle.checkValue" (change)="checkPerformanceParamWise($event.target.checked, headerObj, subTitle);" class="pl-4"
+                                                        [disabled]="!isPerformanceChkboxEnabled"></nb-checkbox>
+                                                </th>
+                                            </ng-container>
+                                        </ng-container>
+                                    </tr>
+                                    <!-- Top Sub Header Row - End -->
+                                </thead>
+                                <tbody>
+                                    <!-- Row content : No data found - Start -->
+                                    <tr class="text-center" *ngIf='performanceSource.performanceRows == null || performanceSource.performanceRows.length == 0'>
+                                        <td [attr.colspan]="(performanceSource.totalSubTitle * performanceSource.headers.length) + 2" scope="col">No Data Found</td>
+                                    </tr>
+                                    <!-- Row content : No data found - End -->
+
+                                    <!-- Row content : Performance data - Start -->
+                                    <tr *ngFor="let performanceRow of performanceSource.performanceRows">
+                                        <td scope="col">{{ performanceRow.rollId }}</td>
+                                        <td scope="col">{{ performanceRow.studentName }}</td>
+                                        <ng-container *ngFor="let performanceDay of performanceRow.performanceDays">
+                                            <!-- <td>{{performanceDay.dateValue}}</td> -->
+                                            <!-- Single Value  -->
+                                            <td scope="col" *ngFor="let performanceData of performanceDay.performanceData" class="text-center">
+                                                <nb-checkbox [value]="performanceData.value" (change)="checkCellPerformanceDataStatus($event.target.checked, performanceData)"
+                                                    class="pl-4" [disabled]="!isPerformanceChkboxEnabled"></nb-checkbox>
+                                            </td>
+                                        </ng-container>
+                                    </tr>
+                                    <!-- Row content : Performance data- End -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </nb-card-body>
+        </nb-card>
+    </div>
+</div>

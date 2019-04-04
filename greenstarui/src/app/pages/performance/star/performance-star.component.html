@@ -1,0 +1,201 @@
+<div class="row">
+    <div class="col-md-12">
+        <nb-card>
+            <nb-card-header>
+                Performance Star
+            </nb-card-header>
+
+            <nb-card-body [nbSpinner]="loading" nbSpinnerSize="xxlarge" nbSpinnerStatus="success">
+                <nb-card>
+
+                    <nb-card-body [nbSpinner]="loadingDropdown" nbSpinnerSize="xxlarge" nbSpinnerStatus="success">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <label for="caltype" class="col-form-label required">Calculation Type</label>
+                                <div class="input-group">
+                                    <select id="caltype" class="form-control form-control-sm" [(ngModel)]="searchPerformanceStarData.calcType" (change)="onChangeCalcType($event.target.value)">
+                                        <option value='Select'>--Select--</option>
+                                        <option value='Individual'>Individual</option>
+                                        <option value='Team'>Team</option>
+                                        <option value='Class'>Class</option>
+                                        <option value='School'>School</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4" *ngIf="isSchoolViewable">
+                                <label for="school" class="col-form-label required">School</label>
+                                <div class="input-group">
+                                    <select id="school" name="school" class="form-control form-control-sm" [(ngModel)]="searchPerformanceStarData.schoolId" (change)="onChangeSchoolChange()">
+                                        <option value="0">--Select--</option>
+                                        <option *ngFor="let school of schoolList" value={{school.id}}>
+                                            {{school.schoolName}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2" *ngIf="isClassViewable">
+                                <label for="className" class="col-form-label required">Class</label>
+                                <div class="input-group">
+                                    <select id="className" name="className" class="form-control form-control-sm" [(ngModel)]="searchPerformanceStarData.classId"
+                                        (change)="onChangeClassChange($event)">
+                                        <option value="0">--Select--</option>
+                                        <option *ngFor="let class of classList" value={{class.id}}>
+                                            {{class.classAndSectionName}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2" *ngIf="isNameViewable || isTeamViewable">
+                                <div id="studentName" *ngIf="isNameViewable">
+                                    <label for="sname" class="col-form-label required">Student Name</label>
+                                    <div class="input-group">
+                                        <select id="sname" name="sname" class="form-control form-control-sm" [(ngModel)]="searchPerformanceStarData.studentId" (change)="onChangeStudentChange()">
+                                            <option value='0'>--Select--</option>
+                                            <option *ngFor="let student of studentList" value={{student.id}}>
+                                                {{student.studentName}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div id="teamname" *ngIf="isTeamViewable">
+                                    <label for="tname" class="col-form-label required">Team Name</label>
+                                    <div class="input-group">
+                                        <select id="tname" name="tname" class="form-control form-control-sm" [(ngModel)]="searchPerformanceStarData.teamName" (change)="onChangeTeamChange()">
+                                            <option value='Select'>--Select--</option>
+                                            <option *ngFor="let teamName of teamList" value={{teamName}}>
+                                                {{teamName}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2" *ngIf="isMonthViewable">
+                                <label for="month" class="col-form-label required">Month</label>
+                                <div class="input-group">
+                                    <select id="month" name="month" class="form-control form-control-sm" [(ngModel)]="searchPerformanceStarData.month" (change)="onChangeMonthChange()">
+                                        <option *ngFor="let month of monthArray" value={{month.id}}>
+                                            {{month.value}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row pt-3 pb-2">
+                            <div class="col-sm-8 text-left errormsg">
+                                <span *ngIf="isSearchDataNotValid">All fields are mandatory to generate star!</span>
+                            </div>
+                            <div class="col-sm-4 text-right">
+                                <button class="btn btn-success btn-sm active"  (click)="generatePerformanceStar();">Generate Star</button>
+                            </div>
+                        </div>
+
+                    </nb-card-body>
+                </nb-card>
+
+                <nb-card *ngIf="isDataAvailable">
+                    <nb-card-body>
+                        <div class="row pb-2">
+                            <div class="col-sm-12 text-left">
+                                <button class="btn btn-success btn-sm active"  (click)="printStar();">Download Star</button>
+                            </div>
+                        </div>
+                        <nb-stepper orientation="horizontal">
+                            <nb-step [label]="performanceStarData.paramOne">
+                                <div name="starDisplayContent" id="paramOneContent">
+                                    <div class="row">
+                                        <div class="col-sm-12 text-center">
+                                            <h2>{{performanceStarData.paramOne}} Star</h2>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <h6 *ngIf="searchPerformanceStarData.calcType != 'Select'">School: {{schoolName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType == 'Individual' || 
+                                            searchPerformanceStarData.calcType == 'Team' ||
+                                            searchPerformanceStarData.calcType == 'Class'">Class: {{classAndSectionName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType == 'Team'">Team Name: {{teamName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType == 'Individual'">Student Name: {{studentName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType != 'Select'">Month: {{month}}</h6>
+                                        </div>
+                                        <div class="col-sm-10">
+                                            <app-greenstar [perfStarMonthData]="performanceStarData.paramOneMonthColorCodes"></app-greenstar>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button nbButton disabled nbStepperNext>prev</button>
+                                <button nbButton nbStepperNext class="ml-2">next</button>
+                            </nb-step>
+                            <nb-step [label]="performanceStarData.paramTwo">
+                                <div name="starDisplayContent" id="paramTwoContent">
+                                    <div class="row">
+                                        <div class="col-sm-12 text-center">
+                                            <h2>{{performanceStarData.paramTwo}} Star</h2>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <h6 *ngIf="searchPerformanceStarData.calcType != 'Select'">School: {{schoolName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType == 'Individual' || 
+                                                    searchPerformanceStarData.calcType == 'Team' ||
+                                                    searchPerformanceStarData.calcType == 'Class'">Class: {{classAndSectionName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType == 'Team'">Team Name: {{teamName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType == 'Individual'">Student Name: {{studentName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType != 'Select'">Month: {{month}}</h6>
+                                        </div>
+                                        <div class="col-sm-10">
+                                            <app-greenstar [perfStarMonthData]="performanceStarData.paramTwoMonthColorCodes"></app-greenstar>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button nbButton nbStepperPrevious>prev</button>
+                                <button nbButton nbStepperNext class="ml-2">next</button>
+                            </nb-step>
+                            <nb-step [label]="performanceStarData.paramThree">
+                                <div name="starDisplayContent" id="paramThreeContent">
+                                    <div class="row">
+                                        <div class="col-sm-12 text-center">
+                                            <h2>{{performanceStarData.paramThree}} Star</h2>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <h6 *ngIf="searchPerformanceStarData.calcType != 'Select'">School: {{schoolName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType == 'Individual' || 
+                                                    searchPerformanceStarData.calcType == 'Team' ||
+                                                    searchPerformanceStarData.calcType == 'Class'">Class: {{classAndSectionName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType == 'Team'">Team Name: {{teamName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType == 'Individual'">Student Name: {{studentName}}</h6>
+                                            <h6 *ngIf="searchPerformanceStarData.calcType != 'Select'">Month: {{month}}</h6>
+                                        </div>
+                                        <div class="col-sm-10">
+                                            <app-greenstar [perfStarMonthData]="performanceStarData.paramThreeMonthColorCodes"></app-greenstar>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button nbButton nbStepperPrevious >prev</button>
+                                <button nbButton disabled nbStepperNext class="ml-2">next</button>
+                            </nb-step>
+                        </nb-stepper>
+                    </nb-card-body>
+                </nb-card>
+
+                <div class="row" *ngIf="isNoPerfData">
+                    <div class="col-sm-12 text-center">
+                        <h3>
+                            No data available for the search parameter to generate star!
+                        </h3>
+                    </div>
+                </div>
+
+
+            </nb-card-body>
+
+        </nb-card>
+    </div>
+</div>

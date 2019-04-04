@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-sm-12">
+        <nb-card>
+            <nb-card-header>
+                School Maintance
+            </nb-card-header>
+
+            <nb-card-body>
+                <nb-card>
+                    <nb-card-body [nbSpinner]="searchDropdownLoading" nbSpinnerSize="xxlarge" nbSpinnerStatus="success">
+                        <div class='row'>
+                            <div class='col-sm-6'>
+                                <label for="state" class="col-form-label required">State</label>
+                                <div class="input-group">
+                                    <select id="state" name="state" class="form-control form-control-sm"
+                                        [(ngModel)]="schoolSearchData.stateName" (change)="onStateChange()">
+                                        <option value="--Select State--">--Select State--</option>
+                                        <option *ngFor="let state of stateList" value={{state.stateName}}>
+                                            {{state.stateName}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class='col-sm-6'>
+                                <label for="district" class="col-form-label">District</label>
+                                <div class="input-group">
+                                    <select id="district" name="district" class="form-control form-control-sm"
+                                        [(ngModel)]="schoolSearchData.district">
+                                        <option value="--Select District--">--Select District--</option>
+                                        <option *ngFor="let district of districtList" value={{district}}>
+                                            {{district}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class='row pt-3'>
+                            <div class='col-sm-5 text-left pt-3 errormsg'>
+                                <span *ngIf="isSearchError">Please enter mandatory fields to search school!</span>
+                            </div>
+                            <div class='col-sm-3 text-right pt-2'>
+                                <button nbButton status="primary" (click)="onSearch()">Search</button>
+                            </div>
+                            <div class='col-sm-4 text-right pt-2' *ngIf="roleService.isGrantedRole(['Admin','PMO']);">
+                                <button id="addSchool" nbButton status="primary" (click)="createSchool()">Add School</button>
+                            </div>
+
+                        </div>
+                    </nb-card-body>
+                </nb-card>
+                <nb-card>
+                    <nb-card-body [nbSpinner]="searchDataLoading" nbSpinnerSize="xxlarge" nbSpinnerStatus="success">
+                        <div class='row pt-3'>
+                            <div class='col-sm-12'>
+                                <ng2-smart-table [settings]="schoolTableParamSetting" (edit)="editSchool($event)"
+                                    (delete)="viewSchool($event)" [source]="schoolTableData">
+                                </ng2-smart-table>
+                            </div>
+                        </div>
+                    </nb-card-body>
+                </nb-card>
+            </nb-card-body>
+        </nb-card>
+    </div>
+</div>

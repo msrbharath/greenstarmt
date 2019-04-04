@@ -1,0 +1,62 @@
+/* This script is coded to run in windows environment
+   dockerx is the bat file name configured in windows docker client installed path
+   Steps to setup docker client and host
+   =====================================
+   1. Download “Docker client for Linux, MacOS and Windows”
+   2. Navigate in the folder and create "dockerx.bat" file with following contents:
+      Docker -H=172.18.2.50:2375  %*
+   3. Save the file and close it
+   4. Install nodejs plugin in jenkins and add the node path with name as GreenAppNodeJS
+ */
+pipeline {
+ agent any
+ tools {
+  nodejs "GreenAppNodeJS"
+ }
+ stages {
+
+  stage('Checkout') {
+   steps {
+    git url: 'http://172.18.2.18/teamgreenstar/371793-Hackathon-FrontEnd.git', credentialsId: 'mageshgitlabcred', branch: 'master'
+   }
+  }
+
+  stage('NPM Install') {
+   steps {
+    bat label: 'npm install', returnStdout: true, script: 'npm install'
+   }
+  }
+
+  stage('NPM test') {
+   steps {
+    bat label: 'Run angular test', returnStatus: true, returnStdout: true, script: 'npm test'
+   }
+  }
+
+  stage('NPM build') {
+   steps {
+    bat label: 'npm build', returnStdout: true, script: 'npm run build -- --prod --aot'
+   }
+  }
+
+  stage('Docker Image') {
+   steps {
+    bat label: 'Docker build', script: 'dockerx build -t greenstarui:prod .'
+   }
+  }
+
+  stage('Stop And Remove Container Exists') {
+   /*To stop and remove if container exists or running. 
+			 Returning true to avoid failure if not exists or running */
+   steps {
+    bat label: 'Stop/Remove if exists', returnStatus: true, script: 'dockerx stop greenstarui-docker && dockerx rm greenstarui-docker'
+   }
+  }
+  
+  stage('Docker Run') {
+   steps {
+    bat label: 'Run docker on container', returnStatus: true, script: 'dockerx run -d --name=greenstarui-docker --publish=4552:4552 greenstarui:prod'
+   }
+  }
+ }
+}

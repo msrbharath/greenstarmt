@@ -1,0 +1,22 @@
+<div class="header-container" [class.left]="position === 'normal'" [class.right]="position === 'inverse'">
+  <div class="logo-containter">
+    <a (click)="toggleSidebar()" href="#" class="navigation">
+      <i class="nb-menu"></i>
+    </a>
+    <div class="logo" (click)="goToHome()">
+      <span>Green Star Application</span>
+    </div>
+  </div>
+</div>
+
+<div class="header-container">
+  <nb-actions size="small">
+    <nb-action>
+      <span>Welcome</span>
+      <span class="pl-2">Panneerselvam</span>
+    </nb-action>
+    <nb-action>
+      <span class="pl-3">Logout</span>
+    </nb-action>
+  </nb-actions>
+</div>

@@ -1,0 +1,45 @@
+<div class="row">
+  <div class="col-md-3"></div>
+  <div class="col-md-6">
+    <nb-card accent="success" [size]="100">
+      <nb-card-header id="loginHeader" class="text-center">Login</nb-card-header>
+      <nb-card-body [nbSpinner]="isSpinner" nbSpinnerSize="xxlarge" nbSpinnerStatus="success">
+        <form [formGroup]="loginForm" (ngSubmit)="doLoginAuth()">
+
+          <div class="form-group required">
+            <label for="userId" class='col-form-label required'>User Id</label>
+            <input type="text" id="userId" name="userId" formControlName="userId" class="form-control">
+          </div>
+
+          <div class="form-group required">
+            <label for="userId" class='col-form-label required'>Password</label>
+            <input type="password" id="password" name="password" formControlName="password" class="form-control">
+          </div>
+
+          <!--
+                  <div class="form-group form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox"> Remember me
+                    </label>
+                  </div>
+                  -->
+
+          <div *ngIf="isShowErrorMsg" class="form-group text-center">
+            <span class="errormsg">Invalid User Id and Password.</span>
+          </div>
+
+          <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+        </form>
+      </nb-card-body>
+
+      <!--
+          <nb-card-footer>      
+          </nb-card-footer>
+          -->
+
+    </nb-card>
+  </div>
+  <div class="col-md-3"></div>
+</div>
