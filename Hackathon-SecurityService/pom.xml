@@ -69,6 +69,11 @@
             <artifactId>jjwt</artifactId>
             <version>0.7.0</version>
         </dependency>
+        <dependency><!-- Added for at value getter and setter for Jwt config -->
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.16.14</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

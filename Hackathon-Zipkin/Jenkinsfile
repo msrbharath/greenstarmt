@@ -11,24 +11,22 @@ node {
     withMaven(maven:'localmaven') {
 
         stage('Checkout') {
-            git url: 'http://172.18.2.18/teamgreenstar/371793-Hackathon-Gateway.git', credentialsId: 'mageshgitlabcred', branch: 'master'
+            git url: 'http://172.18.2.18/teamgreenstar/371793-Hackathon-StudentService.git', credentialsId: 'mageshgitlabcred', branch: 'master'
         }
+
         stage('Build') {
-		  bat label: 'Maven Build status', script: 'mvn clean install -DskipTests'
+		  bat label: 'Maven Build status', script: 'mvn clean install'
         }
-        stage('Test') {
-		  bat label: 'Maven Test', returnStatus: true, script: 'mvn test'
+        stage('Docker Image') {
+            bat label: 'Maven Build status',script: 'dockerx build --tag=greenstarapp-zipkin-service-image:latest --rm=true .'
         }
-        stage('Build Docker Image') {
-            bat label: 'Maven Build status',script: 'dockerx build --tag=greenstarapp-gateway-service:latest --rm=true .'
-        }
-        stage('Stop And Remove Container if Exists') {
+        stage('Stop And Remove Container Exists') {
             /*To stop and remove if container exists or running. 
 			 Returning true to avoid failure if not exists or running */
-            bat label: 'Stop/Remove if exists', returnStatus: true, script: 'dockerx stop greenstarapp-gateway-service && dockerx rm greenstarapp-gateway-service'
+            bat label: 'Stop/Remove if exists', returnStatus: true, script: 'dockerx stop greenstarapp-zipkin-service-container && dockerx rm greenstarapp-zipkin-service-container'
         }
         stage('Docker Run') {
-            bat label: 'Docker Run', script: 'dockerx run -d --name=greenstarapp-gateway-service --publish=8765:8765 -e eureka.client.serviceUrl.defaultZone="http://greenstarapp-discovery-service:8761/eureka/" --link greenstardb:mysql --network=greenapp-network  greenstarapp-gateway-service:latest'
+            bat label: 'Maven Build status', returnStatus: true, script: 'dockerx run -d --name=greenstarapp-zipkin-service-container --publish=9411:9411 greenstarapp-zipkin-service-image:latest'
         }
     }
 }

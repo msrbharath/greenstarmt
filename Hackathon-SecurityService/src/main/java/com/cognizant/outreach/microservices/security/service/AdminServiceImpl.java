@@ -15,18 +15,23 @@
 package com.cognizant.outreach.microservices.security.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.cognizant.outreach.entity.RoleDetail;
+import com.cognizant.outreach.entity.School;
 import com.cognizant.outreach.entity.UserRoleMapping;
+import com.cognizant.outreach.microservices.security.dao.SchoolRepository;
 import com.cognizant.outreach.microservices.security.dao.UserRoleMappingRepository;
 import com.cognizant.outreach.microservices.security.vo.UserRoleMappingVO;
 
@@ -41,6 +46,9 @@ public class AdminServiceImpl implements AdminService {
 
 	@Autowired
 	private UserRoleMappingRepository userRoleMappingRepository;
+	
+	@Autowired
+	private SchoolRepository schoolRepository;
 
 	@Override
 	public List<UserRoleMappingVO> listOfUserRolesMappings() {
@@ -50,11 +58,22 @@ public class AdminServiceImpl implements AdminService {
 		Optional<List<Object[]>> userRoleObj = userRoleMappingRepository.listUserRolesMappings();
 		if (userRoleObj.isPresent()) {
 			for (Object[] userRoleArray : userRoleObj.get()) {
+				String schoolIds = (String) userRoleArray[3];
+				String schoolNmstr="";
+				if(!StringUtils.isEmpty(schoolIds)) {
+					String[] ids = schoolIds.split(",");
+					List<Long> longIds = Arrays.stream(ids).map(Long::valueOf).collect(Collectors.toList());
+					List<School> schoolNames = schoolRepository.findByIdIn(longIds);
+					List<String> schoolNms= new ArrayList<>();
+					for (School school : schoolNames) {
+						schoolNms.add(school.getSchoolName());
+					}
+					schoolNmstr = org.apache.commons.lang.StringUtils.join(schoolNms, ",");
+				}
 				userRolesMappingsList.add(new UserRoleMappingVO((long) userRoleArray[0], (String) userRoleArray[1],
-						(String) userRoleArray[2]));
+						(String) userRoleArray[2],schoolIds,schoolNmstr));
 			}
 		}
-		
 		LOGGER.info("Total user role mappings {}", userRolesMappingsList.size());		
 		return userRolesMappingsList;
 	}
@@ -69,7 +88,7 @@ public class AdminServiceImpl implements AdminService {
 			UserRoleMapping userRoleMapping = new UserRoleMapping();
 			userRoleMapping.setUserId(userRoleMappingVO.getUserId());
 			userRoleMapping.setRoleDetail(roleDetailOpt.get());
-			
+			userRoleMapping.setSchools(userRoleMappingVO.getSchoolIds());
 			userRoleMapping.setCreatedUserId(userRoleMappingVO.getLoggedUserId());
 			userRoleMapping.setCreatedDtm(currentDate);
 			userRoleMapping.setLastUpdatedUserId(userRoleMappingVO.getLoggedUserId());

@@ -21,7 +21,7 @@ public interface UserRoleMappingRepository extends CrudRepository<UserRoleMappin
 	
 	public Optional<UserRoleMapping> findByUserId(String userId);
 	
-	@Query("SELECT ur.id, ur.userId, ur.roleDetail.roleName FROM UserRoleMapping ur")
+	@Query("SELECT ur.id, ur.userId, ur.roleDetail.roleName,ur.schools FROM UserRoleMapping ur")
 	public Optional<List<Object[]>> listUserRolesMappings();
 	
 	@Query("SELECT rd FROM RoleDetail rd WHERE rd.roleName=:ROLE_NAME")

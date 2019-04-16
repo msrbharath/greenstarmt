@@ -1,6 +1,6 @@
 /**
  * 
- */
+ *//*
 package com.cognizant.outreach.microservices.security.service;
 
 import java.security.Key;
@@ -32,6 +32,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
+// TODO: Entire service implementation need to re write once the Authentication method(SSO/LDAP) is confirmed
+//The current application did't ** use ** any of these implementation authentication and authorization handled in JwtUsernamePasswordAuthenticationFilter
+// and JwtTokenAuthenticationFilter(gateway)
 public class SecurityServiceImpl implements SecurityService {
 
 	private static final long SESSION_EXPIRE_MS = 1200000;
@@ -48,13 +51,13 @@ public class SecurityServiceImpl implements SecurityService {
 	@Autowired
 	private ApplicationProperties applicationProperties;
 
-	/*
+	
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * com.cognizant.outreach.microservices.auth.service.AuthService#isTokenValid(
 	 * java.lang.String)
-	 */
+	 
 	@Override
 	public Boolean isTokenValid(String token) {
 		
@@ -74,13 +77,13 @@ public class SecurityServiceImpl implements SecurityService {
 		return isTokenValid;
 	}
 
-	/*
+	
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * com.cognizant.outreach.microservices.auth.service.AuthService#initializeUser(
 	 * java.lang.String, java.lang.String)
-	 */
+	 
 	@Override
 	public Optional<User> initializeUser(String userId, String password) {
 		userId = userId.toLowerCase();
@@ -148,7 +151,7 @@ public class SecurityServiceImpl implements SecurityService {
 		return builder.compact();
 	}
 	
-	/*
+	
 	private void parseJWT(String jwt) {
 
 		Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(SECURITY_KEY))
@@ -158,7 +161,7 @@ public class SecurityServiceImpl implements SecurityService {
 	    System.out.println("Subject: " + claims.getSubject());
 	    System.out.println("Issuer: " + claims.getIssuer());	    
 	}
-	*/
+	
 
 	// TODO: yet to implement ldap or sso logic
 	private boolean authenticateUser(String userId, String password) {
@@ -191,3 +194,4 @@ public class SecurityServiceImpl implements SecurityService {
 	}
 
 }
+*/
