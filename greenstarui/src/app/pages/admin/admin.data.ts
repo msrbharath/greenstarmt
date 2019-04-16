@@ -1,6 +1,4 @@
-import { SmartTableDatePickerComponent } from "../../@theme/components/smart-table-date-picker-component/smart-table-date-picker.components";
-import { IAdminDetail } from "./admin.interface";
-
+import {CustomRenderComponent} from './admin.customrender.component';
 export class AdminData {
 
     public static PERF_PARAM_DEFAULT: string = 'DEFAULT';
@@ -39,6 +37,14 @@ export class AdminData {
                             list: this.getRoles()
                         }
                     }
+                },
+                schoolNames: {
+                    title: 'Allowed Schools',
+                    type: 'string',
+                    editor: {
+                        type: 'custom',
+                        component: CustomRenderComponent
+                      }
                 }
             }
         };

@@ -6,6 +6,8 @@ import { AdminModalComponent } from './admin.component.modal';
 import { AdminData } from './admin.data';
 import { IAdminDetail } from './admin.interface';
 import { AdminService } from './admin.service';
+import { StudentService } from '../student/student.service';
+import {ISchoolDetail} from '../student/student.interface';
 
 @Component({
   selector: 'ngx-dashboard',
@@ -17,14 +19,29 @@ export class AdminComponent implements OnInit {
   public userRoleDetail: LocalDataSource = new LocalDataSource();
   public userRoleTableSetting: any = AdminData.getUserRoleMappingTableSetting();
   public isSpinner: boolean = false;
+  public schoolList: ISchoolDetail[]=[];
 
   constructor(
     private modalService: NgbModal,
-    private adminService: AdminService) {
+    private adminService: AdminService,
+    private studentService: StudentService) {
   }
 
   ngOnInit(): void {
     this.loadUserRoleMappings();
+    this.loadSchoolList();
+  }
+
+  private loadSchoolList() {
+    this.studentService.getSchools().subscribe(
+      (response) => {
+        this.schoolList = response;
+        localStorage.setItem('schools',JSON.stringify(this.schoolList));
+      },
+      error => {
+        console.log("Http Server error", error);
+      },
+    );
   }
 
   private loadUserRoleMappings(): void {
@@ -41,7 +58,6 @@ export class AdminComponent implements OnInit {
   }
 
   private validateUserRole(event: any): Boolean {
-
     let isValid: boolean = true;
     if (ValidatorUtil.isEmpty(event.newData.userId) || ValidatorUtil.isEmpty(event.newData.roleName)) {
       isValid = false;

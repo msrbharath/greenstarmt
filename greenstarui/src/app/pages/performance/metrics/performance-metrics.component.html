@@ -80,8 +80,15 @@
     
                     <div class="row pt-3">
                         <div class="col-sm-12" *ngIf="performanceMetricsSource.headers">
+                            <div class="col-sm-4">
+                            </div>
+                            <div class="col-sm-4">
+                                <button class="btn btn-primary btn-sm" type="button" (click)="exportIndividualMetrics();">Export Individual Metrics</button>
+                            </div>
+                            <div class="col-sm-4">
+                            </div>
                             <div class="table-responsive">
-                                <table class="table table-sm table-striped table-bordered">
+                                <table class="table table-sm table-striped table-bordered" #individualtable>
                                     <thead>
                                         <!-- Top Header Row - Start -->
                                         <tr>
@@ -176,8 +183,15 @@
     
                     <div class="row pt-3">
                         <div class="col-sm-12" *ngIf="classWiseMetricsSource.sectionData">
+                            <div class="col-sm-4">
+                            </div>
+                            <div class="col-sm-4">
+                                <button class="btn btn-primary btn-sm" type="button" (click)="exportClassMetrics();">Export Class Metrics</button>
+                            </div>
+                            <div class="col-sm-4">
+                            </div>
                             <div class="table-responsive">
-                                <table class="table table-sm table-striped table-bordered">
+                                <table class="table table-sm table-striped table-bordered" #classtable>
                                     <thead>
                                         <!-- Top Header Row - Start -->
                                         <tr>
@@ -261,8 +275,15 @@
     
                     <div class="row pt-3">
                         <div class="col-sm-12" *ngIf="teamWiseMetricsSource.sectionData">
+                            <div class="col-sm-4">
+                            </div>
+                            <div class="col-sm-4">
+                                <button class="btn btn-primary btn-sm" type="button" (click)="exportTeamMetrics();">Export Team Metrics</button>
+                            </div>
+                            <div class="col-sm-4">
+                            </div>
                             <div class="table-responsive">
-                                <table class="table table-sm table-striped table-bordered">
+                                <table class="table table-sm table-striped table-bordered" #teamtable>
                                     <thead>
                                         <!-- Top Header Row - Start -->
                                         <tr>
@@ -384,9 +405,17 @@
                 </form>
                     <div class="row pt-3">
                         <div class="col-sm-12" *ngIf="encouragingMetricsSource">
+                            <div class="col-sm-4">
+                            </div>
+                            <div class="col-sm-4">
+                                <button class="btn btn-primary btn-sm" type="button" (click)="exportEncouragingMetrics();">Export Encouraging Metrics</button>
+                            </div>
+                            <div class="col-sm-4">
+                            </div>
                             <div class="table-responsive">
-                                <ng-container *ngFor="let encouragingMetrics of encouragingMetricsSource.metrics">
-                                    <table class="table table-sm table-striped table-bordered">
+                                <ng-container *ngFor="let encouragingMetrics of encouragingMetricsSource.metrics; let i=index">
+                                  
+                                    <table class="table table-sm table-striped table-bordered" #encouragingtable>
                                         <thead>
                                             <!-- Top Header Row - Start -->
                                             <tr>

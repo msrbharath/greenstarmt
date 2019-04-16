@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ValidatorUtil } from '../../util/validator-util';
 import { IClassSectionDetail, ISchoolDetail } from '../star/performance-star.interface';
@@ -6,6 +6,8 @@ import { PerformanceStarService } from '../star/performance-star.service';
 import { PerformanceStaticData } from './performance-metrics.constant';
 import { IClassWiseMetricsDataTable, IEncouragingMetricsDataTable, IPerformanceMetricsDataTable, ISearchPerformanceMetrics, ITeamWiseMetricsDataTable } from './performance-metrics.interface';
 import { PerformanceMetricsService } from './performance-metrics.service';
+import { saveAs as tempSaveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 @Component({
     selector: 'ngx-performance',
@@ -41,6 +43,11 @@ export class PerformanceMetricsComponent implements OnInit {
     public selectedClassName: string;
     public selectedMonth1: string;
     public selectedMonth2: string;
+
+    @ViewChild('individualtable') individualtable: ElementRef;
+    @ViewChild('classtable') classtable: ElementRef;
+    @ViewChild('teamtable') teamtable: ElementRef;
+    @ViewChild('encouragingtable') encouragingtable: ElementRef;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -354,6 +361,34 @@ export class PerformanceMetricsComponent implements OnInit {
             this.searchDataErrorMsg = 'All fields are mandatory!';
             this.weekDays = new Map<String, String>();
         }
-    }    
+    }   
+    
+    public exportIndividualMetrics(json: any[]): void {
+        const ws: XLSX.WorkSheet=XLSX.utils.table_to_sheet(this.individualtable.nativeElement);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'IndividualMetrics');
+        XLSX.writeFile(wb, 'IndividualMetrics'+'_export_' + new Date().getTime() + '.xlsx');
+    }
+
+    public exportClassMetrics(json: any[]): void {
+        const ws: XLSX.WorkSheet=XLSX.utils.table_to_sheet(this.classtable.nativeElement);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'ClassMetrics');
+        XLSX.writeFile(wb, 'ClassMetrics'+'_export_' + new Date().getTime() + '.xlsx');
+    }
+
+    public exportTeamMetrics(json: any[]): void {
+        const ws: XLSX.WorkSheet=XLSX.utils.table_to_sheet(this.teamtable.nativeElement);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'TeamMetrics');
+        XLSX.writeFile(wb, 'TeamMetrics'+'_export_' + new Date().getTime() + '.xlsx');
+    }
+
+    public exportEncouragingMetrics(json: any[]): void {
+        const ws: XLSX.WorkSheet=XLSX.utils.table_to_sheet(this.encouragingtable.nativeElement);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'EncouragingMetrics');
+        XLSX.writeFile(wb, 'EncouragingMetrics'+'_export_' + new Date().getTime() + '.xlsx');
+    }
 
 }

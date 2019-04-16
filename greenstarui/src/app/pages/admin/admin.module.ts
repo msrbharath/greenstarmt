@@ -7,20 +7,25 @@ import { SmartTableDatePickerComponent } from '../../@theme/components/smart-tab
 import { AdminComponent } from './admin.component';
 import { AdminService } from './admin.service';
 import { AdminModalComponent } from './admin.component.modal';
+import {CustomRenderComponent} from './admin.customrender.component';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 @NgModule({
   imports: [
     ThemeModule,
     Ng2SmartTableModule,
-    NbDialogModule.forRoot()
+    NbDialogModule.forRoot(),
+    NgMultiSelectDropDownModule.forRoot()
   ],
   declarations: [
     AdminComponent,
-    AdminModalComponent
+    AdminModalComponent,
+    CustomRenderComponent
   ],
   entryComponents: [
     SmartTableDatePickerComponent,
-    AdminModalComponent
+    AdminModalComponent,
+    CustomRenderComponent
   ],
   providers: [
     AdminService
