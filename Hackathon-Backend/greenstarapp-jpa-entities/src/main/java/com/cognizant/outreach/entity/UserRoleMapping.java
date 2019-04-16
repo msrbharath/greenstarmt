@@ -24,6 +24,18 @@ public class UserRoleMapping extends BaseEntity {
 	@JoinColumn(name = "ROLE_ID", nullable = false)
 	private RoleDetail roleDetail;
 
+	
+	@Column(nullable = true, length = 500)
+	private String schools;
+
+	public String getSchools() {
+		return schools;
+	}
+
+	public void setSchools(String schools) {
+		this.schools = schools;
+	}
+	
 	/**
 	 * @return the userId
 	 */
