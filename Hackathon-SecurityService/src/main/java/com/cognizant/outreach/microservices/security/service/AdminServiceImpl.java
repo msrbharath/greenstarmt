@@ -154,4 +154,12 @@ public class AdminServiceImpl implements AdminService {
 		return SUCCESS;
 	}
 
+	@Override
+	public String getAssignedSchools(String userId) {
+		Optional<UserRoleMapping> userRoleMapping = userRoleMappingRepository.findByUserId(userId);
+		if(userRoleMapping.isPresent()) {
+			return userRoleMapping.get().getSchools();
+		}
+		return null;
+	}
 }

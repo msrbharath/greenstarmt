@@ -27,4 +27,6 @@ public interface AdminService {
 	public String updateUserRolesMappings(UserRoleMappingVO userRoleMappingVO);
 
 	public String deleteUserRolesMappings(UserRoleMappingVO userRoleMappingVO);
+	
+	public String getAssignedSchools(String userId);
 }

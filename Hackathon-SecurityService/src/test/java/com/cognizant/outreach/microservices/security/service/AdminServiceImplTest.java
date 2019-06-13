@@ -16,7 +16,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.cognizant.outreach.entity.RoleDetail;
+import com.cognizant.outreach.entity.School;
 import com.cognizant.outreach.entity.UserRoleMapping;
+import com.cognizant.outreach.microservices.security.dao.SchoolRepository;
 import com.cognizant.outreach.microservices.security.dao.UserRoleMappingRepository;
 import com.cognizant.outreach.microservices.security.vo.UserRoleMappingVO;
 
@@ -28,15 +30,21 @@ public class AdminServiceImplTest {
 	@Mock
 	private UserRoleMappingRepository userRoleMappingRepository;
 	
+	@Mock
+	private SchoolRepository schoolRepository;
+	
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void TestGetUserRoleMappings() {
 
 		when(userRoleMappingRepository.listUserRolesMappings()).thenReturn(getUserRoleMappings());
+		when(schoolRepository.findByIdIn(Mockito.any(List.class))).thenReturn(findByIdIn());
+		
 		List<UserRoleMappingVO> userRoleList = adminServiceImpl.listOfUserRolesMappings();
 		assertTrue(userRoleList.size() >0 );
 	}
@@ -107,9 +115,9 @@ public class AdminServiceImplTest {
 
 		List<Object[]> userRoleMappingList = new ArrayList<>();
 
-		Object[] data1 = new Object[] { 1l, "panneer", "Admin" };
-		Object[] data2 = new Object[] { 2l, "magesh", "Admin" };
-		Object[] data3 = new Object[] { 3l, "bharath", "POM" };
+		Object[] data1 = new Object[] { 1l, "panneer", "Admin", "1,2" };
+		Object[] data2 = new Object[] { 2l, "magesh", "Admin", "1,2" };
+		Object[] data3 = new Object[] { 3l, "bharath", "POM", "2" };
 
 		userRoleMappingList.add(data1);
 		userRoleMappingList.add(data2);
@@ -209,4 +217,18 @@ public class AdminServiceImplTest {
 		return userRoleMappingVO;
 	}
 
+	private List<School> findByIdIn() {
+		List<School> schools = new ArrayList<>();
+		School school = new School();
+		school.setAddress("Erode");
+		school.setCityName("Erode");
+		school.setId(1L);
+		school.setSchoolName("Coimbatore Sr Sec School");
+		school.setDistrict("Erode");
+		school.setState("Tamilnadu");
+
+		schools.add(school);
+
+		return schools;
+	}
 }

@@ -51,6 +51,20 @@ public class AdminController {
 		return ResponseEntity.status(HttpStatus.OK).body(userRoleMappings);
 	}
 	
+	@RequestMapping(method = RequestMethod.POST, path = "/getassignedschools")
+	public ResponseEntity<String> getAssignedSchools(@RequestBody String userId) {
+		
+		String assignedSchoolIds = null;
+		try {
+			assignedSchoolIds = adminService.getAssignedSchools(userId);
+		} catch (Exception e) {
+			LOGGER.debug("Exception occured while fetching school details");
+			LOGGER.debug(e.getMessage());
+			ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body("\""+assignedSchoolIds+"\"");
+	}
+	
 	@RequestMapping(method = RequestMethod.POST, path = "/saveuserrole")
 	public ResponseEntity<String> saveUserRoleMapping(@RequestBody UserRoleMappingVO userRoleMappingVO) {
 
