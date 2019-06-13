@@ -25,7 +25,6 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                 activeModal.componentInstance.modalContent = 'Session expired or invalid.Login again';
                 this.router.navigate(['/login']);
             }
-
             // clone the request to add the api authentication key to header.
             newRequest = request.clone({
                 headers: new HttpHeaders({

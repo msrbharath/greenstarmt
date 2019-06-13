@@ -91,7 +91,7 @@
                                 <span *ngIf="isSearchDataNotValid">All fields are mandatory to generate star!</span>
                             </div>
                             <div class="col-sm-4 text-right">
-                                <button class="btn btn-success btn-sm active"  (click)="generatePerformanceStar();">Generate Star</button>
+                                <button id="generateStarBtn" class="btn btn-success btn-sm active"  (click)="generatePerformanceStar();">Generate Star</button>
                             </div>
                         </div>
 
@@ -102,7 +102,7 @@
                     <nb-card-body>
                         <div class="row pb-2">
                             <div class="col-sm-12 text-left">
-                                <button class="btn btn-success btn-sm active"  (click)="printStar();">Download Star</button>
+                                <button id="downloadGeneratedStarBtn" class="btn btn-success btn-sm active"  (click)="printStar();">Download Star</button>
                             </div>
                         </div>
                         <nb-stepper orientation="horizontal">

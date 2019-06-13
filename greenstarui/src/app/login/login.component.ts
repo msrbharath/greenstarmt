@@ -69,7 +69,20 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('lastUpdatedTime', seconds);
 
             if (roleName === 'Event POC') {
-              this.router.navigate(['greenstarui/pages/school']);
+              // If Event POC then get the schools assigned to him
+              this.loginService.getAssignedSchools(this.loginForm.getRawValue().userId).subscribe(
+                (response) => {
+                  console.log('response',response);
+                  localStorage.setItem('assignedSchools', response);
+                  this.router.navigate(['greenstarui/pages/school']);
+                  this.isSpinner = false;
+                },
+                error => {
+                  console.log("Http Server error", error);
+                  this.isSpinner = false;
+                  this.isShowErrorMsg = true;
+                }
+              );
             } else {
               this.router.navigate(['greenstarui/pages/dashboard']);
             }

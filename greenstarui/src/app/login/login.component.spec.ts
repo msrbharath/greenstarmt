@@ -76,6 +76,7 @@ describe('Login Component', () => {
         expect(localStorage.getItem('apiToken') !== null);
     });
 
+    /*
     it('Login Module: Should login Event POC User', () => {
         component.ngOnInit();
 
@@ -89,7 +90,8 @@ describe('Login Component', () => {
         expect(localStorage.getItem('roleName') === 'Event POC');
         expect(localStorage.getItem('apiToken') !== null);
     });
-
+    */
+   
     it('Login Module: Should login Invalid user', () => {
         component.ngOnInit();
 

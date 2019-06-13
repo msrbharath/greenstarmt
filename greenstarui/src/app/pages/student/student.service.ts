@@ -16,7 +16,12 @@ export class StudentService {
     }
 
     public getSchools(): Observable<any> {
-        return this.http.get(API_URL+'/school/getSchools', { headers: this.headerValue });
+        //Set the schools assigned if Event POC
+        let schoolIds=' ';
+        if(localStorage.getItem('roleName') == 'Event POC'){
+            schoolIds = localStorage.getItem('assignedSchools');
+        }
+        return this.http.post(API_URL+'/school/getSchools',schoolIds, { headers: this.headerValue });
     }
 
     public getClassList(school: ISchoolDetail): Observable<any> {

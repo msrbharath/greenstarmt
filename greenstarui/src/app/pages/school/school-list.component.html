@@ -40,7 +40,7 @@
                                 <span *ngIf="isSearchError">Please enter mandatory fields to search school!</span>
                             </div>
                             <div class='col-sm-3 text-right pt-2'>
-                                <button nbButton status="primary" (click)="onSearch()">Search</button>
+                                <button id="searchSchool" nbButton status="primary" (click)="onSearch()">Search</button>
                             </div>
                             <div class='col-sm-4 text-right pt-2' *ngIf="roleService.isGrantedRole(['Admin','PMO']);">
                                 <button id="addSchool" nbButton status="primary" (click)="createSchool()">Add School</button>

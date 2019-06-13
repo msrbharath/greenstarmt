@@ -11,6 +11,7 @@ import { AdminComponent } from './admin.component';
 import { AdminModalComponent } from './admin.component.modal';
 import { AdminService } from './admin.service';
 import { AdminServiceMock } from './mocks/admin.service.mock';
+import { StudentService } from '../student/student.service';
 
 describe('Admin Component', () => {
 
@@ -23,7 +24,7 @@ describe('Admin Component', () => {
         TestBed.configureTestingModule({
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
             declarations: [AdminComponent, AdminModalComponent],
-            providers: [ NgbModal, NgbActiveModal, 
+            providers: [ NgbModal, NgbActiveModal, StudentService, 
                 { provide: AdminService, useClass: AdminServiceMock }                
             ],
             imports: [

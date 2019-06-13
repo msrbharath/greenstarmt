@@ -17,9 +17,7 @@ export class LoginService {
         return this.http.post(API_URL + '/security/login', formData, { headers: this.headerValue });
     }
 
-    private handleError(error: Response | any): any {
-        console.log('API Service :: Handle Error' + error);
-        return Observable.throw(error);
+    public getAssignedSchools(userId: string): Observable<any> {
+        return this.http.post(API_URL + '/admin/getassignedschools', userId, { headers: this.headerValue });
     }
-
 }

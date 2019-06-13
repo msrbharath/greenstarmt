@@ -26,6 +26,7 @@ export class ISchoolDetail {
 export class ISchoolSearchData {
     public stateName: string;
     public district: string;
+    public allowedSchools: string;
 }
 
 export class IClass {

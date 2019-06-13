@@ -15,6 +15,10 @@ export class SchoolService {
     }
 
     public getSchoolsForSearch(schoolSearchData: ISchoolSearchData): Observable<any> {
+        //Set the schools assigned if Event POC
+        if(localStorage.getItem('roleName') == 'Event POC'){
+            schoolSearchData.allowedSchools = localStorage.getItem('assignedSchools');
+        }
         return this.http.post(API_URL+'/school/getSchoolsForSearch',schoolSearchData,{ headers: this.headerValue });
     }
 

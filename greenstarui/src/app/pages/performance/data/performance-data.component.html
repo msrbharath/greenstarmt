@@ -71,10 +71,10 @@
                             <span id="errorSpanMsg" *ngIf="isSearchDataNotValid"> {{searchDataErrorMsg}} </span>
                         </div>
                         <div class="col-sm-2 text-right pt-2">
-                            <button class="btn btn-primary btn-sm" type="button" (click)="resetPerformanceSearch();">Reset</button>
+                            <button id="searchResetPerfDataBtn" class="btn btn-primary btn-sm" type="button" (click)="resetPerformanceSearch();">Reset</button>
                         </div>
                         <div class="col-sm-2 text-right pt-2">
-                            <button class="btn btn-primary btn-sm" type="submit">Search</button>
+                            <button id="searchPerfDataBtn" class="btn btn-primary btn-sm" type="submit">Search</button>
                         </div>
                     </div>
                 </form>
@@ -84,7 +84,7 @@
                         <button class="btn btn-primary btn-sm" (click)="openBulkUploadMmodal();">Bulk Upload</button>
                     </div>
                     <div class="col-sm-3 pt-2">
-                        <button class="btn btn-primary btn-sm" (click)="downloadTemplate();">
+                        <button id="downloadTemplateBtn" class="btn btn-primary btn-sm" (click)="downloadTemplate();">
                             <span>Download Template</span>
                         </button>
                     </div>

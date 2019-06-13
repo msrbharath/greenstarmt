@@ -1,4 +1,4 @@
-import { browser, by, element, promise, ElementFinder, ElementArrayFinder } from 'protractor';
+import { by, element } from 'protractor';
 
 export class SchoolPage {
 
@@ -12,6 +12,11 @@ export class SchoolPage {
 
     public getSchoolPopupTitleText() {
         return element(by.id('schoolTitle')).getText();
+    }
+
+    public setSearchSchoolParam() {
+        element(by.id('state')).sendKeys('TAMIL NADU');
+        element(by.id('district')).sendKeys('COIMBATORE');        
     }
 
 }
